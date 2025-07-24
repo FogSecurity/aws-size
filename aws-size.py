@@ -21,7 +21,7 @@ iam_policies_results = [
 
 customer_managed_policies = iam_policies_results[0]['Policies']
 managed_policies_stats = []
-warning
+warning_policies = []
 
 for managed_policy in customer_managed_policies:
     version = managed_policy['DefaultVersionId']
@@ -45,12 +45,28 @@ for managed_policy in customer_managed_policies:
     char_left = 6144 - len(stripped_str_policy)
 
     managed_policies_stats.append({
-        'Arn': arn,
-        'Name': name,
-        'Usage': usage,
-        'CharLeft': char_left
+        'arn': arn,
+        'name': name,
+        'usage': usage,
+        'charleft': char_left
     })
 
-print(managed_policies_stats)
-
+    if usage > 0.90:
+        warning_policies.append({
+            'arn': arn,
+            'name': name,
+            'usage': usage,
+            'charleft': char_left
+        })
     
+
+#Output Section
+print("Managed Policies Scanned: " + str(len(managed_policies_stats)))
+print("Managed Policies with usage over 90%: " + str(len(warning_policies)))
+print('\n')
+print("List of policies with more than 90% character usage: ")
+
+for policy in warning_policies:
+    print(policy['arn'])
+    print(f"Policy Usage: {policy['usage']:.2%}")
+    print("Characters Left: " + str(char_left) + '\n')

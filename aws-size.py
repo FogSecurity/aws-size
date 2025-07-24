@@ -34,9 +34,13 @@ for managed_policy in customer_managed_policies:
 
     policy_doc = policy['PolicyVersion']['Document']
 
-    str_policy = json.dumps(policy_doc)
+    str_policy = json.dumps(policy_doc, indent=None, separators=(',', ':'))
     print(policy_doc)
-    print(type(str_policy))
+
+    #Strip white space
+    stripped_str_policy = str_policy.replace(" ", "").replace("/\s/", "")
+
+    print(len(stripped_str_policy))
 
 #list-policies
 

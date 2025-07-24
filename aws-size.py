@@ -61,12 +61,12 @@ for managed_policy in customer_managed_policies:
     
 
 #Output Section
-print("Managed Policies Scanned: " + str(len(managed_policies_stats)))
-print("Managed Policies with usage over 90%: " + str(len(warning_policies)))
+print("Customer Managed Policies Scanned: " + str(len(managed_policies_stats)))
+print("Customer Managed Policies with usage over 90%: " + str(len(warning_policies)))
 print('\n')
 print("List of policies with more than 90% character usage: ")
 
 for policy in warning_policies:
     print(policy['arn'])
     print(f"Policy Usage: {policy['usage']:.2%}")
-    print("Characters Left: " + str(char_left) + '\n')
+    print("Characters Left: " + str(policy['charleft']) + '\n')

@@ -3,7 +3,7 @@ import boto3
 import botocore
 import json
 
-parser = argparse.ArgumentParser(prog='AWS Size')
+parser = argparse.ArgumentParser(prog='IAM Size')
 
 parser.add_argument("--profile")
 

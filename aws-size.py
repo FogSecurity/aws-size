@@ -15,17 +15,18 @@ iam_client = session.client('iam')
 iam_policies_results = [
     iam_client.get_paginator('list_policies')
     .paginate(Scope='Local'
-
     )
     .build_full_result()
 ]
 
 customer_managed_policies = iam_policies_results[0]['Policies']
+managed_policies_stats = []
+warning
 
 for managed_policy in customer_managed_policies:
     version = managed_policy['DefaultVersionId']
     arn = managed_policy['Arn']
-    print(managed_policy['Arn'])
+    name = managed_policy['PolicyName']
 
     policy = iam_client.get_policy_version(
         PolicyArn=arn,
@@ -35,15 +36,21 @@ for managed_policy in customer_managed_policies:
     policy_doc = policy['PolicyVersion']['Document']
 
     str_policy = json.dumps(policy_doc, indent=None, separators=(',', ':'))
-    print(policy_doc)
 
     #Strip white space
-    stripped_str_policy = str_policy.replace(" ", "").replace("/\s/", "")
+    stripped_str_policy = str_policy.replace(" ", "")
+    char_count = len(stripped_str_policy)
 
-    print(len(stripped_str_policy))
+    usage = round(char_count / 6144, 4)
+    char_left = 6144 - len(stripped_str_policy)
 
-#list-policies
+    managed_policies_stats.append({
+        'Arn': arn,
+        'Name': name,
+        'Usage': usage,
+        'CharLeft': char_left
+    })
 
-#For reach policy, get size
-    #Get Policy 
-    #Get Policy Version
+print(managed_policies_stats)
+
+    

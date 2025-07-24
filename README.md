@@ -1,5 +1,5 @@
 # iam-size
-Checks Hard to Find Size Limits and Usage for AWS.
+Checks Hard to Find Size Limits and Usage for AWS IAM.
 
 For support or questions, we can be reached at info@fogsecurity.io.
 

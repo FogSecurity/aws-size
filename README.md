@@ -1,5 +1,5 @@
 # aws-size
-Checks Hard to Find Size Limits and Usage for AWS
+Checks Hard to Find Size Limits and Usage for AWS.
 
 For support or questions, we can be reached at info@fogsecurity.io.
 
@@ -13,7 +13,31 @@ Imagine a scenario where someone is trying to apply least privilege and has appr
 
 ## Running aws-size
 
+Prerequisites:
+* Python
+* AWS Credentials
 
+To install required libraries, `pip3 install -r requirements.txt` can be run.
+
+To run aws-size, the following command can be run:
+
+```
+python3 aws-size.py --profile <your_profile_here>
+```
+
+This will output a list of customer managed policies with usage limit over 90%.
+
+Example output:
+
+```
+Customer Managed Policies Scanned: 82
+Customer Managed Policies with usage over 90%: 2
+
+List of policies with more than 90% character usage: 
+arn:aws:iam::123412341234:policy/<bigpolicy>
+Policy Usage: 90.48%
+Characters Left: 585
+```
 
 ## Coverage
 

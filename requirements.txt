@@ -1,4 +1,3 @@
-boto3>=1.34.57
-botocore>=1.34.57
-argparse
-json
+args>=0.1.0
+boto3>=1.39.12
+botocore>=1.39.12

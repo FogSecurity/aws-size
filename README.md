@@ -1,5 +1,5 @@
-# iam-size
-Checks Hard to Find Size Limits and Usage for AWS IAM.
+# aws-size
+Checks Hard to Find Size Limits and Usage for AWS, including IAM.
 
 For support or questions, we can be reached at info@fogsecurity.io.
 
@@ -7,11 +7,11 @@ For support or questions, we can be reached at info@fogsecurity.io.
 
 AWS services and resources have limits that can impact development.  These limits (sometimes referred to as Service Quotas) can sometimes be adjustable (soft limits) or not (hard limits).  In some cases, these can make development difficult.  
 
-Currently, this tool focuses on AWS IAM and visibility into some of those limits that can impede development.  
+Currently, this tool focuses on AWS resources including IAM and visibility into some of those limits that can impede development.  
 
 Imagine a scenario where someone is trying to apply least privilege and has appropriately used condition keys, granular IAM actions, and resources in their IAM policies.  They may need to add another statement or action, but if they're out of character space - they will need to think creatively on how to adjust the policy.  This tool will help bring visibility into those limits.
 
-## Running iam-size
+## Running aws-size
 
 Prerequisites:
 * Python
@@ -19,10 +19,10 @@ Prerequisites:
 
 To install required libraries, `pip3 install -r requirements.txt` can be run.
 
-To run iam-size, the following command can be run:
+To run aws-size, the following command can be run:
 
 ```
-python3 iam-size.py --profile <your_profile_here>
+python3 aws-size.py --profile <your_profile_here>
 ```
 
 This will output a list of customer managed policies with usage limit over 90%.
@@ -47,7 +47,7 @@ Current Limit: 6,144 characters.
 
 Note: white space doesn't count.
 
-iam-size will check all customer managed policies.
+aws-size will check all customer managed policies.
 
 
 

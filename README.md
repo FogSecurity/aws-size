@@ -45,7 +45,18 @@ By default, aws-size reports resources with equal or over than 90% usage.  For c
 
 For example, setting the threshold to 0.75 will report resources with 75% or more usage.  
 
-If you want to return all resources, set the threshold to 0.  
+```
+python3 aws-size.py --profile <your_profile_here> --threshold 0.75
+```
+
+If you want to return all resources, set the threshold to 0.  Additionally, threshold can be set to all.
+
+Example commands:
+
+```
+python3 aws-size.py --profile <your_profile_here> --threshold all
+python3 aws-size.py --profile <your_profile_here> --threshold 0
+```
 
 ## Coverage
 

@@ -19,7 +19,7 @@ Prerequisites:
 
 To install required libraries, `pip3 install -r requirements.txt` can be run.
 
-To run aws-size, the following command can be run:
+To run aws-size, the following command can be run with aws-size's default configuration:
 
 ```
 python3 aws-size.py --profile <your_profile_here>
@@ -37,6 +37,25 @@ List of policies with more than 90% character usage:
 arn:aws:iam::123412341234:policy/<bigpolicy>
 Policy Usage: 90.48%
 Characters Left: 585
+```
+
+### Customization: Setting Threshold
+
+By default, aws-size reports resources with equal or over than 90% usage.  For customization, aws-size supports the `--threshold` argument.  This argument takes a number between 0 and 1 inclusive to set the threshold of resources for reporting.
+
+For example, setting the threshold to 0.75 will report resources with 75% or more usage.  
+
+```
+python3 aws-size.py --profile <your_profile_here> --threshold 0.75
+```
+
+If you want to return all resources, set the threshold to 0.  Additionally, threshold can be set to all.
+
+Example commands:
+
+```
+python3 aws-size.py --profile <your_profile_here> --threshold all
+python3 aws-size.py --profile <your_profile_here> --threshold 0
 ```
 
 ## Coverage

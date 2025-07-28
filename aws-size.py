@@ -7,8 +7,25 @@ import sys
 parser = argparse.ArgumentParser(prog='IAM Size')
 
 parser.add_argument("--profile")
+parser.add_argument("--threshold", help='Set threshold for reporting (between 0 and 1).  Default is 90%')
 
 args = parser.parse_args()
+
+try:
+    if args.threshold:
+        if args.threshold == 'all':
+            threshold = 0
+        else:
+            threshold = float(args.threshold)
+            if threshold > 1 or threshold < 0:
+                print("Threshold must be a number between 0 and 1.  Running aws-size with default of 90%")
+                threshold = 0.90
+            
+    else:
+        threshold = 0.90
+except: 
+    print("Threshold must be a number between 0 and 1.  Running aws-size with default of 90%")
+    threshold = 0.90
 
 try:
     session = boto3.Session(profile_name = args.profile)
@@ -54,14 +71,7 @@ for managed_policy in customer_managed_policies:
         usage = round(char_count / 6144, 4)
         char_left = 6144 - len(stripped_str_policy)
 
-        managed_policies_stats.append({
-            'arn': arn,
-            'name': name,
-            'usage': usage,
-            'charleft': char_left
-        })
-
-        if usage > 0.90:
+        if usage >= threshold:
             warning_policies.append({
                 'arn': arn,
                 'name': name,
@@ -74,9 +84,9 @@ for managed_policy in customer_managed_policies:
 
 #Output Section
 print("Customer Managed Policies Scanned: " + str(len(managed_policies_stats)))
-print("Customer Managed Policies with usage over 90%: " + str(len(warning_policies)))
+print(f"Customer Managed Policies with usage over {threshold:.2%} " + str(len(warning_policies)))
 print('\n')
-print("List of policies with more than 90% character usage: ")
+print(f"List of policies with more than {threshold:.2%} character usage: ")
 
 for policy in warning_policies:
     print(policy['arn'])

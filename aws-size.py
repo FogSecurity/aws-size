@@ -7,6 +7,7 @@ import sys
 parser = argparse.ArgumentParser(prog='IAM Size')
 
 parser.add_argument("--profile")
+parser.add_argument("--threshold", help='Set threshold for reporting (between 0 and 1).  Default is 90%')
 
 args = parser.parse_args()
 

@@ -74,7 +74,7 @@ for managed_policy in customer_managed_policies:
             'charleft': char_left
         })
 
-        if usage > threshold:
+        if usage >= threshold:
             warning_policies.append({
                 'arn': arn,
                 'name': name,
@@ -87,9 +87,9 @@ for managed_policy in customer_managed_policies:
 
 #Output Section
 print("Customer Managed Policies Scanned: " + str(len(managed_policies_stats)))
-print("Customer Managed Policies with usage over 90%: " + str(len(warning_policies)))
+print(f"Customer Managed Policies with usage over {threshold:.2%} " + str(len(warning_policies)))
 print('\n')
-print("List of policies with more than 90% character usage: ")
+print(f"List of policies with more than {threshold:.2%} character usage: ")
 
 for policy in warning_policies:
     print(policy['arn'])

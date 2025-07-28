@@ -71,13 +71,6 @@ for managed_policy in customer_managed_policies:
         usage = round(char_count / 6144, 4)
         char_left = 6144 - len(stripped_str_policy)
 
-        managed_policies_stats.append({
-            'arn': arn,
-            'name': name,
-            'usage': usage,
-            'charleft': char_left
-        })
-
         if usage >= threshold:
             warning_policies.append({
                 'arn': arn,

@@ -13,10 +13,14 @@ args = parser.parse_args()
 
 try:
     if args.threshold:
-        threshold = float(args.threshold)
-        if threshold > 1 or threshold < 0:
-            print("Threshold must be a number between 0 and 1.  Running aws-size with default of 90%")
-            threshold = 0.90
+        if args.threshold == 'all':
+            threshold = 0
+        else:
+            threshold = float(args.threshold)
+            if threshold > 1 or threshold < 0:
+                print("Threshold must be a number between 0 and 1.  Running aws-size with default of 90%")
+                threshold = 0.90
+            
     else:
         threshold = 0.90
 except: 

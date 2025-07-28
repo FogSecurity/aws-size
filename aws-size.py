@@ -12,6 +12,18 @@ parser.add_argument("--threshold", help='Set threshold for reporting (between 0 
 args = parser.parse_args()
 
 try:
+    if args.threshold:
+        threshold = float(args.threshold)
+        if threshold > 1 or threshold < 0:
+            print("Threshold must be a number between 0 and 1.  Running aws-size with default of 90%")
+            threshold = 0.90
+    else:
+        threshold = 0.90
+except: 
+    print("Threshold must be a number between 0 and 1.  Running aws-size with default of 90%")
+    threshold = 0.90
+
+try:
     session = boto3.Session(profile_name = args.profile)
     iam_client = session.client('iam')
 except:
@@ -62,7 +74,7 @@ for managed_policy in customer_managed_policies:
             'charleft': char_left
         })
 
-        if usage > 0.90:
+        if usage > threshold:
             warning_policies.append({
                 'arn': arn,
                 'name': name,

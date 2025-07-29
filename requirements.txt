@@ -1,4 +1,4 @@
 args>=0.1.0
 boto3>=1.39.12
 botocore>=1.39.12
-pick>=2.4.0
+questionary>=2.1.0

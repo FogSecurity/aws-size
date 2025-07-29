@@ -1,9 +1,6 @@
 import argparse
 import boto3
-import botocore
-import json
-import sys
-from pick import pick
+import questionary
 
 parser = argparse.ArgumentParser(prog='IAM Size')
 
@@ -13,12 +10,13 @@ parser.add_argument("--threshold", help='Set threshold for reporting (between 0 
 args = parser.parse_args()
 
 supported_limits = [
-    'AWS IAM Managed Policies Size'
+        "AWS IAM Managed Policies" 
 ]
 
-title = 'Please choose a limit:'
-option, index = pick(supported_limits, title)
-print('Resource Limit Selected:', option)
+limit = questionary.rawselect(
+    "Select a resource limit",
+    choices=supported_limits,
+).ask()
 
 try:
     if args.threshold:
@@ -36,7 +34,7 @@ except:
     print("Threshold must be a number between 0 and 1.  Running aws-size with default of 90%")
     threshold = 0.90
 
-if option == 'AWS IAM Managed Policies Size':
+if limit == 'AWS IAM Managed Policies':
     try:
         session = boto3.Session(profile_name = args.profile)
         iam_client = session.client('iam')

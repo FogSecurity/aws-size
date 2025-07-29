@@ -81,5 +81,5 @@ Note: 16 KB is the limit for unencoded.  EC2 encodes user data
 ### AWS Organizations Service Control Policies (Global)
 
 Limit: 5120 characters  
-Note: If policies are saved via CLI or SDK, white space is preserved.  
+Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
 [Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)

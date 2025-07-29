@@ -1,9 +1,9 @@
 import argparse
 import boto3
 import questionary
+import base64
 import sys
 import json
-import base64
 
 parser = argparse.ArgumentParser(prog='AWS Size')
 

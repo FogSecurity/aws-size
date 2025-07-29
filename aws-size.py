@@ -2,8 +2,8 @@ import argparse
 import boto3
 import questionary
 import sys
-import math
 import json
+import base64
 
 parser = argparse.ArgumentParser(prog='AWS Size')
 
@@ -143,16 +143,16 @@ elif limit == "AWS EC2 User Data":
 
                 if user_data.get('UserData').get('Value'):
                     user_data = user_data['UserData']['Value']
+
+                    decoded_user_data_bytes = base64.b64decode(user_data)
+                    decoded_user_data = decoded_user_data_bytes.decode('utf-8')
+
+                    char_count = len(decoded_user_data)
                 else:
                     char_count = 0
 
-                char_count = len(user_data)
-
-                user_data_size = math.ceil(char_count/3) * 4
-                print(user_data_size)
-                usage = round(user_data_size / 16384, 4)
-
-                char_left = 16384 - user_data_size
+                char_left = 16384 - char_count
+                usage = round(char_count / 16384, 4)
 
                 if usage >= threshold:
                     warning_instances.append({
@@ -174,4 +174,4 @@ elif limit == "AWS EC2 User Data":
     for instance in warning_instances:
         print(instance['instance_id'])
         print(f"Instance Usage: {instance['usage']:.2%}")
-        print(f"Size Left: {instance['sizeleft']} KB\n")
+        print(f"Size Left: {instance['sizeleft']} Bytes \n")

@@ -10,10 +10,10 @@ parser.add_argument("--threshold", help='Set threshold for reporting (between 0 
 args = parser.parse_args()
 
 supported_limits = [
-        "AWS IAM Managed Policies" 
+        "AWS IAM Managed Policies"
 ]
 
-limit = questionary.rawselect(
+limit = questionary.select(
     "Select a resource limit",
     choices=supported_limits,
 ).ask()

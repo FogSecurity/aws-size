@@ -1,16 +1,21 @@
 import argparse
 import boto3
 import questionary
+import sys
+import math
+import json
 
-parser = argparse.ArgumentParser(prog='IAM Size')
+parser = argparse.ArgumentParser(prog='AWS Size')
 
 parser.add_argument("--profile")
 parser.add_argument("--threshold", help='Set threshold for reporting (between 0 and 1).  Default is 90%')
+parser.add_argument("--region")
 
 args = parser.parse_args()
 
 supported_limits = [
-        "AWS IAM Managed Policies"
+        "AWS IAM Managed Policies",
+        "AWS EC2 User Data"
 ]
 
 limit = questionary.select(
@@ -35,6 +40,7 @@ except:
     threshold = 0.90
 
 if limit == 'AWS IAM Managed Policies':
+
     try:
         session = boto3.Session(profile_name = args.profile)
         iam_client = session.client('iam')
@@ -102,3 +108,70 @@ if limit == 'AWS IAM Managed Policies':
         print(policy['arn'])
         print(f"Policy Usage: {policy['usage']:.2%}")
         print("Characters Left: " + str(policy['charleft']) + '\n')
+
+elif limit == "AWS EC2 User Data":
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        ec2_client = session.client('ec2')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        ec2_results = [
+            ec2_client.get_paginator('describe_instances')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing EC2 instances")
+        sys.exit()
+
+    instances = ec2_results[0]['Reservations']
+
+    ec2_stats = []
+    warning_instances = []
+
+    for reservation in instances:
+        for instance in reservation['Instances']:
+            try:
+                instance_id = instance['InstanceId']
+                user_data = ec2_client.describe_instance_attribute(
+                    InstanceId=instance_id,
+                    Attribute='userData'
+                )
+
+                if user_data.get('UserData').get('Value'):
+                    user_data = user_data['UserData']['Value']
+                else:
+                    char_count = 0
+
+                char_count = len(user_data)
+
+                user_data_size = math.ceil(char_count/3) * 4
+                print(user_data_size)
+                usage = round(user_data_size / 16384, 4)
+
+                char_left = 16384 - user_data_size
+
+                if usage >= threshold:
+                    warning_instances.append({
+                        'instance_id': instance_id,
+                        'usage': usage,
+                        'sizeleft': char_left
+                    })
+
+            except:
+                print(f"Issue processing instance: {instance_id}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("EC2 Instances Scanned: " + str(len(ec2_stats)))
+    print(f"EC2 Instances with usage over {threshold:.2%} " + str(len(warning_instances)))
+    print('\n')
+    print(f"List of instances with more than {threshold:.2%} size usage: ")
+
+    for instance in warning_instances:
+        print(instance['instance_id'])
+        print(f"Instance Usage: {instance['usage']:.2%}")
+        print(f"Size Left: {instance['sizeleft']} KB\n")

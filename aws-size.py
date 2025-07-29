@@ -206,14 +206,11 @@ elif limit == 'Organizations SCPs':
                 PolicyId=scp['Id']
             )
 
-            print(scp_details['Policy']['Content'])
+            scp_content = scp_details['Policy']['Content']
+            scp_id = scp['Id']
             scp_name = scp['Name']
-            scp_description = scp['Description']
 
-            if scp_description:
-                char_count = len(scp_description)
-            else:
-                char_count = 0
+            char_count = len(scp_content)
 
             char_left = 5120 - char_count
             usage = round(char_count / 5120, 4)
@@ -237,6 +234,6 @@ elif limit == 'Organizations SCPs':
     print(f"List of SCPs with more than {threshold:.2%} character usage: ")
 
     for scp in warning_scps:
-        print(scp['scp_id'])
+        print(scp['scp_name'])
         print(f"SCP Usage: {scp['usage']:.2%}")
         print("Characters Left: " + str(scp['charleft']) + '\n')

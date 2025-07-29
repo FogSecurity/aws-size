@@ -78,6 +78,8 @@ Limit: 16 KB
 Note: 16 KB is the limit for unencoded.  EC2 encodes user data  
 [EC2 User Data Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
 
+### AWS Organizations Service Control Policies (Global)
 
-
-Check AWS Documentation for all of the IAM and AWS STS Quotas (Limits) [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).
+Limit: 5120 characters  
+Note: If policies are saved via CLI or SDK, white space is preserved.  
+[Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)

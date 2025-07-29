@@ -130,7 +130,6 @@ elif limit == "AWS EC2 User Data":
 
     instances = ec2_results[0]['Reservations']
 
-    ec2_stats = []
     warning_instances = []
 
     for reservation in instances:
@@ -167,7 +166,7 @@ elif limit == "AWS EC2 User Data":
 
     #Eventually standardize output here
     #Output Section
-    print("EC2 Instances Scanned: " + str(len(ec2_stats)))
+    print("EC2 Instances Scanned: " + str(len(instances)))
     print(f"EC2 Instances with usage over {threshold:.2%} " + str(len(warning_instances)))
     print('\n')
     print(f"List of instances with more than {threshold:.2%} size usage: ")

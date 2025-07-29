@@ -15,7 +15,8 @@ args = parser.parse_args()
 
 supported_limits = [
         "AWS IAM Managed Policies",
-        "AWS EC2 User Data"
+        "AWS EC2 User Data",
+        "Organizations SCPs"
 ]
 
 limit = questionary.select(
@@ -175,3 +176,67 @@ elif limit == "AWS EC2 User Data":
         print(instance['instance_id'])
         print(f"Instance Usage: {instance['usage']:.2%}")
         print(f"Size Left: {instance['sizeleft']} Bytes \n")
+
+elif limit == 'Organizations SCPs': 
+    try:
+        session = boto3.Session(profile_name = args.profile)
+        organizations_client = session.client('organizations')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        organizations_results = [
+            organizations_client.get_paginator('list_policies')
+            .paginate(
+                Filter='SERVICE_CONTROL_POLICY'
+            )
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing SCPs")
+        sys.exit()
+
+    scps = organizations_results[0]['Policies']
+    warning_scps = []
+
+    for scp in scps:
+        try:
+            scp_details = organizations_client.describe_policy(
+                PolicyId=scp['Id']
+            )
+
+            print(scp_details['Policy']['Content'])
+            scp_name = scp['Name']
+            scp_description = scp['Description']
+
+            if scp_description:
+                char_count = len(scp_description)
+            else:
+                char_count = 0
+
+            char_left = 5120 - char_count
+            usage = round(char_count / 5120, 4)
+
+            if usage >= threshold:
+                warning_scps.append({
+                    'scp_id': scp_id,
+                    'scp_name': scp_name,
+                    'usage': usage,
+                    'charleft': char_left
+                })
+
+        except:
+            print(f"Issue processing SCP: {scp_id}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("Organizations SCPs Scanned: " + str(len(scps)))
+    print(f"Organizations SCPs with usage over {threshold:.2%} " + str(len(warning_scps)))
+    print('\n')
+    print(f"List of SCPs with more than {threshold:.2%} character usage: ")
+
+    for scp in warning_scps:
+        print(scp['scp_id'])
+        print(f"SCP Usage: {scp['usage']:.2%}")
+        print("Characters Left: " + str(scp['charleft']) + '\n')

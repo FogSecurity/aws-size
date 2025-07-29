@@ -19,13 +19,19 @@ Prerequisites:
 
 To install required libraries, `pip3 install -r requirements.txt` can be run.
 
-To run aws-size, the following command can be run with aws-size's default configuration:
+To run aws-size, the following command can be run:
 
 ```
-python3 aws-size.py --profile <your_profile_here>
+python3 aws-size.py --profile <your_profile_here> --region us-east-1
 ```
 
-This will output a list of customer managed policies with usage limit over 90%.
+```
+? Select a resource limit (Use arrow keys)
+ » AWS IAM Managed Policies
+   AWS EC2 User Data
+```
+
+Note: Region is only necessary if choosing resources that are regional such as EC2 instances and user data.  IAM is a global service.
 
 Example output:
 
@@ -60,13 +66,17 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 
 ## Coverage
 
-### IAM Managed Policies
+### IAM Managed Policies (Global)
 
-Current Limit: 6,144 characters.  
+Limit: 6,144 characters
+Note: white space doesn't count
+[AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).
 
-Note: white space doesn't count.
+### EC2 User Data (Region Specific)
 
-aws-size will check all customer managed policies.
+Limit: 16 KB
+Note: 16 KB is the limit for unencoded.  EC2 encodes user data
+[EC2 User Data Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
 
 
 

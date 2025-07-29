@@ -68,15 +68,15 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 
 ### IAM Managed Policies (Global)
 
-Limit: 6,144 characters.  
-Note: white space doesn't count.
-- [AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).
+Limit: 6,144 characters
+Note: white space doesn't count
+[AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).
 
 ### EC2 User Data (Region Specific)
 
-Limit: 16 KB.
-Note: 16 KB is the limit for unencoded.  EC2 encodes user data.
-- [EC2 User Data Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
+Limit: 16 KB
+Note: 16 KB is the limit for unencoded.  EC2 encodes user data
+[EC2 User Data Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
 
 
 

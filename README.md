@@ -1,13 +1,11 @@
 # aws-size
-Checks Hard to Find Size Limits and Usage for AWS, including IAM.
+Checks Hard to Find Size Limits and Usage for AWS and can provide advance warning to teams about resource limits in AWS before it's too late.  Usage of these limits are not covered by AWS provided tooling such as Service Quotas and Trusted Advisor.
 
 For support or questions, we can be reached at info@fogsecurity.io.
 
 ## Overview
 
 AWS services and resources have limits that can impact development.  These limits (sometimes referred to as Service Quotas) can sometimes be adjustable (soft limits) or not (hard limits).  In some cases, these can make development difficult as running into a limit late can result in larger or risky architectural changes.  While AWS offers tooling to manage these and view visibility such as Service Quotas, Trusted Advisor, and more - these tools do not account for all limits and often refer to account or resource # limits, not necessarily limits within resources.  Even open source tooling we looked at focuses on similar limits and Trusted Advisor coverage.  aws-size addresses this gap in coverage and visibility.
-
-Reach out to us at info@fogsecurity.io if you have questions or feedback.
 
 Current Coverage: IAM, Organizations, EC2
 

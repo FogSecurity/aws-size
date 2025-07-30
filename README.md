@@ -17,6 +17,8 @@ Prerequisites:
 * Python
 * AWS Credentials
 
+We recommend least privilege when running aws-size and using short-term credentials.  aws-size does not require any sort of write permissions.  AWS provided managed policies that can work with aws-size include ReadOnlyAccess and SecurityAudit.  The ViewOnlyAccess policy does not have the appropriate permissions to view usage of certain resources.  
+
 To install required libraries, `pip3 install -r requirements.txt` can be run.
 
 To run aws-size, the following command can be run:

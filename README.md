@@ -29,6 +29,8 @@ python3 aws-size.py --profile <your_profile_here> --region us-east-1
 ? Select a resource limit (Use arrow keys)
  » AWS IAM Managed Policies
    AWS EC2 User Data
+   Organizations SCPs
+   Organizations RCPs
 ```
 
 Note: Region is only necessary if choosing resources that are regional such as EC2 instances and user data.  IAM is a global service.
@@ -79,6 +81,12 @@ Note: 16 KB is the limit for unencoded.  EC2 encodes user data
 [EC2 User Data Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
 
 ### AWS Organizations Service Control Policies (Global)
+
+Limit: 5120 characters  
+Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
+[Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)
+
+### AWS Organizations Resource Control Policies (Global)
 
 Limit: 5120 characters  
 Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    

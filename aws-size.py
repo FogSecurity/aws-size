@@ -16,7 +16,8 @@ args = parser.parse_args()
 supported_limits = [
         "AWS IAM Managed Policies",
         "AWS EC2 User Data",
-        "Organizations SCPs"
+        "Organizations SCPs",
+        "Organizations RCPs"
 ]
 
 limit = questionary.select(
@@ -176,7 +177,7 @@ elif limit == "AWS EC2 User Data":
         print(f"Instance Usage: {instance['usage']:.2%}")
         print(f"Size Left: {instance['sizeleft']} Bytes \n")
 
-elif limit == 'Organizations SCPs': 
+elif limit == 'Organizations SCPs' or limit == 'Organizations RCPs': 
     try:
         session = boto3.Session(profile_name = args.profile)
         organizations_client = session.client('organizations')
@@ -184,55 +185,66 @@ elif limit == 'Organizations SCPs':
         print("Potential authentication issue: check credentials and try again")
         sys.exit()
 
+    if limit == 'Organizations SCPs':
+        selected_resource = "SCP"
+    elif limit == 'Organizations RCPs':
+        selected_resource = "RCP"
+
     try:
+
+        if selected_resource == "SCP":
+            org_filter = 'SERVICE_CONTROL_POLICY'
+        elif selected_resource == "RCP":
+            org_filter = 'RESOURCE_CONTROL_POLICY'
+
         organizations_results = [
             organizations_client.get_paginator('list_policies')
             .paginate(
-                Filter='SERVICE_CONTROL_POLICY'
+                Filter=org_filter
             )
             .build_full_result()
         ]
     except:
-        print("Issue with listing SCPs")
+        print("Issue with listing " + selected_resource + "s")
         sys.exit()
 
-    scps = organizations_results[0]['Policies']
-    warning_scps = []
+    org_policies = organizations_results[0]['Policies']
+    warning_org_policies = []
 
-    for scp in scps:
+    for policy in org_policies:
         try:
-            scp_details = organizations_client.describe_policy(
-                PolicyId=scp['Id']
+            policy_details = organizations_client.describe_policy(
+                PolicyId=policy['Id']
             )
 
-            scp_content = scp_details['Policy']['Content']
-            scp_id = scp['Id']
-            scp_name = scp['Name']
+            policy_content = policy_details['Policy']['Content']
+            policy_id = policy['Id']
+            policy_name = policy['Name']
 
-            char_count = len(scp_content)
+            char_count = len(policy_content)
 
             char_left = 5120 - char_count
             usage = round(char_count / 5120, 4)
 
             if usage >= threshold:
-                warning_scps.append({
-                    'scp_id': scp_id,
-                    'scp_name': scp_name,
+                warning_org_policies.append({
+                    'policy_id': policy_id,
+                    'policy_name': policy_name,
                     'usage': usage,
                     'charleft': char_left
                 })
 
         except:
-            print(f"Issue processing SCP: {scp_id}")
+            print(f"Issue processing {selected_resource}: {policy_id}")
 
     #Eventually standardize output here
     #Output Section
-    print("Organizations SCPs Scanned: " + str(len(scps)))
-    print(f"Organizations SCPs with usage over {threshold:.2%} " + str(len(warning_scps)))
+    print(f"Organizations {selected_resource}s Scanned: " + str(len(org_policies)))
+    print(f"Organizations {selected_resource}s with usage over {threshold:.2%} " + str(len(warning_org_policies)))
     print('\n')
-    print(f"List of SCPs with more than {threshold:.2%} character usage: ")
+    print(f"List of {selected_resource}s with more than {threshold:.2%} character usage: ")
 
-    for scp in warning_scps:
-        print(scp['scp_name'])
-        print(f"SCP Usage: {scp['usage']:.2%}")
-        print("Characters Left: " + str(scp['charleft']) + '\n')
+    for policy in warning_org_policies:
+        print(policy['policy_name'])
+        print(f"{selected_resource} Usage: {policy['usage']:.2%}")
+        print("Characters Left: " + str(policy['charleft']) + '\n')

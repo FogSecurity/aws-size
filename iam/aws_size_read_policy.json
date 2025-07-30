@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AwsSizeReadOnly",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListPolicies",
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceAttribute",
+                "organizations:ListPolicies",
+                "organizations:DescribePolicy"  
+            ],
+            "Resource": "*"
+        }
+    ]
+}

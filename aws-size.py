@@ -158,8 +158,11 @@ elif limit == 'AWS IAM Role Trust Policy':
 
             str_trust_policy = json.dumps(trust_policy, indent=None, separators=(', ', ':'))
 
-            usage = round(len(str_trust_policy) / role_trust_quota, 4)
-            char_left = role_trust_quota - len(str_trust_policy)
+            stripped_str_policy = str_trust_policy.replace(" ", "")
+            char_count = len(stripped_str_policy)
+
+            usage = round(char_count / role_trust_quota, 4)
+            char_left = role_trust_quota - char_count
 
             if usage >= threshold:
                 warning_roles.append({

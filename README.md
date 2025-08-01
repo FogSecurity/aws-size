@@ -74,7 +74,7 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 | ------- | -------- | ----- | ---------- | ---------------------- | ------------------------ | -------------------------- | ---------- |
 | IAM | Managed Policies | Policy Length | 6,144 characters | L-ED111B8C | No | No | No |
 | IAM | IAM Roles | Role trust policy length | 2,048 characters | L-C07B4B0D | No | No | Yes |
-| EC2 | User Data | Size | 16 KB | No | No | No | No |
+| EC2 | Instance | User Data Size | 16 KB | No | No | No | No |
 | Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
 | Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | No |
 

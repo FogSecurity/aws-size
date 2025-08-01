@@ -34,6 +34,7 @@ python3 aws-size.py --profile <your_profile_here> --region us-east-1
    AWS EC2 User Data
    Organizations SCPs
    Organizations RCPs
+   KMS Key Policies
 ```
 
 Note: Region is only necessary if choosing resources that are regional such as EC2 instances and user data.  IAM is a global service.
@@ -110,3 +111,8 @@ Note: If policies are saved via CLI or SDK, white space is preserved.  This oper
 Limit: 5120 characters  
 Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
 [Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)
+
+### KMS Key Policies 
+
+Limit: 32,768 bytes
+[KMS: Creating Key Policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-overview.html)

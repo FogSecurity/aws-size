@@ -73,6 +73,7 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 | Service | Resource | Limit | Limit Size | Service Quota Coverage | Service Quota Visibility | Trusted Advisor Visibility | Adjustable |
 | ------- | -------- | ----- | ---------- | ---------------------- | ------------------------ | -------------------------- | ---------- |
 | IAM | Managed Policies | Policy Length | 6,144 characters | L-ED111B8C | No | No | No |
+| IAM | IAM Roles | Role trust policy length | 2,048 characters | L-C07B4B0D | No | No | Yes |
 | EC2 | User Data | Size | 16 KB | No | No | No | No |
 | Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
 | Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | No |
@@ -82,6 +83,12 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 
 Limit: 6,144 characters  
 Note: white space doesn't count  
+[AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).
+
+### IAM Role Trust Policy (Global)
+
+Limit: 2,048 characters.
+Note: white space doesn't count.  This limit is adjustable up to 4,096.
 [AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).
 
 ### EC2 User Data (Region Specific)

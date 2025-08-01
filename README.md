@@ -70,6 +70,14 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 
 ## Coverage
 
+| Service | Resource | Limit | Limit Size | Service Quota Coverage | Service Quota Visibility | Trusted Advisor Visibility | Adjustable |
+| ------- | -------- | ----- | ---------- | ---------------------- | ------------------------ | -------------------------- | ---------- |
+| IAM | Managed Policies | Policy Length | 6,144 characters | L-ED111B8C | No | No | No |
+| EC2 | User Data | Size | 16 KB | No | No | No | No |
+| Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
+| Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | No |
+
+
 ### IAM Managed Policies (Global)
 
 Limit: 6,144 characters  

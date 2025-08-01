@@ -15,6 +15,7 @@ args = parser.parse_args()
 
 supported_limits = [
         "AWS IAM Managed Policies",
+        "AWS IAM Role Trust Policy",
         "AWS EC2 User Data",
         "Organizations SCPs",
         "Organizations RCPs"
@@ -110,6 +111,78 @@ if limit == 'AWS IAM Managed Policies':
         print(policy['arn'])
         print(f"Policy Usage: {policy['usage']:.2%}")
         print("Characters Left: " + str(policy['charleft']) + '\n')
+
+elif limit == 'AWS IAM Role Trust Policy':
+    try:
+        session = boto3.Session(profile_name = args.profile)
+        iam_client = session.client('iam')
+
+        #Hard coded Service Quota Region
+        sq_client = session.client('service-quotas', region_name = 'us-east-1')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        trust_policy_quota = sq_client.get_service_quota(
+            ServiceCode='iam',
+            QuotaCode='L-C07B4B0D'
+        )
+    except:
+        print("Error retrieving Service Quota for IAM")
+        sys.exit()
+
+    try:
+        iam_roles_results = [
+            iam_client.get_paginator('list_roles')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing IAM roles")
+        sys.exit()
+
+
+    role_trust_quota = trust_policy_quota['Quota']['Value']
+    roles = iam_roles_results[0]['Roles']
+
+    warning_roles = []
+
+    for role in roles:
+        arn = role['Arn']
+        name = role['RoleName']
+
+        try:
+            trust_policy = iam_client.get_role(RoleName=name)
+            trust_policy = trust_policy['Role']['AssumeRolePolicyDocument']
+
+            str_trust_policy = json.dumps(trust_policy, indent=None, separators=(', ', ':'))
+
+            usage = round(len(str_trust_policy) / role_trust_quota, 4)
+            char_left = role_trust_quota - len(str_trust_policy)
+
+            if usage >= threshold:
+                warning_roles.append({
+                    'arn': arn,
+                    'name': name,
+                    'usage': usage,
+                    'charleft': char_left
+                })
+
+        except:
+            print(f"Issue processing role: {arn}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("IAM Roles Scanned: " + str(len(roles)))
+    print(f"IAM Roles with Trust Policy usage over {threshold:.2%} " + str(len(warning_roles)))
+    print('\n')
+    print(f"List of roles with more than {threshold:.2%} trust policy length character usage: ")
+
+    for role in warning_roles:
+        print(role['arn'])
+        print(f"Trust Policy Usage: {role['usage']:.2%}")
+        print("Characters Left: " + str(role['charleft']) + '\n')
 
 elif limit == "AWS EC2 User Data":
     try:

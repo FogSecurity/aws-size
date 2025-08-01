@@ -77,7 +77,8 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 | IAM | IAM Roles | Role trust policy length | 2,048 characters | L-C07B4B0D | No | No | Yes |
 | EC2 | Instance | User Data Size | 16 KB | No | No | No | No |
 | Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
-| Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | No |
+| Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | 
+| KMS | KMS Key | Key Policy Size | 32,768 bytes | No | No | No | No |
 
 
 ### IAM Managed Policies (Global)

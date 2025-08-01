@@ -30,6 +30,7 @@ python3 aws-size.py --profile <your_profile_here> --region us-east-1
 ```
 ? Select a resource limit (Use arrow keys)
  » AWS IAM Managed Policies
+   AWS IAM Role Trust Policy
    AWS EC2 User Data
    Organizations SCPs
    Organizations RCPs

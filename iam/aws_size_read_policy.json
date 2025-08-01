@@ -8,10 +8,13 @@
                 "iam:ListPolicies",
                 "iam:GetPolicy",
                 "iam:GetPolicyVersion",
+                "iam:ListRoles",
+                "iam:GetRole",
                 "ec2:DescribeInstances",
                 "ec2:DescribeInstanceAttribute",
                 "organizations:ListPolicies",
-                "organizations:DescribePolicy"  
+                "organizations:DescribePolicy",
+                "servicequotas:GetServiceQuota"
             ],
             "Resource": "*"
         }

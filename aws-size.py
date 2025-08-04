@@ -362,11 +362,14 @@ elif limit == "AWS KMS Key Policies":
             print(f"Issue processing key policy: {key_arn}")
             continue
         
-        str_key_policy = json.dumps(key_policy_doc, indent=None, separators=(',', ':'))
+        policy_dict = json.loads(key_policy_doc)
 
-        stripped_str_policy = str_key_policy.replace(" ", "")
-        char_count = len(stripped_str_policy)
+        str_key_policy = json.dumps(policy_dict, indent=None, separators=(',', ':'))
 
-        print(char_count)
+        #stripped_str_policy = str_key_policy.replace(' ', '')
+        #stripped_str_policy = stripped_str_policy.replace('\n', '')
+
+        char_count = len(str_key_policy)
+        print(str_key_policy)
 
         #32768

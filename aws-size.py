@@ -17,6 +17,7 @@ supported_limits = [
         "AWS IAM Managed Policies",
         "AWS IAM Role Trust Policy",
         "AWS EC2 User Data",
+        "S3 Bucket Policy",
         "Organizations SCPs",
         "Organizations RCPs"
 ]
@@ -252,6 +253,75 @@ elif limit == "AWS EC2 User Data":
         print(instance['instance_id'])
         print(f"Instance Usage: {instance['usage']:.2%}")
         print(f"Size Left: {instance['sizeleft']} Bytes \n")
+
+elif limit == "S3 Bucket Policy":
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        s3_client = session.client('s3')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        s3_buckets_results = [
+            s3_client.get_paginator('list_buckets')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing S3 buckets")
+        sys.exit()
+
+    buckets = s3_buckets_results[0]['Buckets']
+    warning_buckets = []
+
+    for bucket in buckets:
+        bucket_name = bucket['Name']
+
+        try:
+            bucket_policy = s3_client.get_bucket_policy(Bucket=bucket_name)
+            policy_document = json.loads(bucket_policy['Policy'])
+
+            str_policy = json.dumps(policy_document, indent=None, separators=(',', ':'))
+
+            stripped_str_policy = str_policy.replace(" ", "")
+            char_count = len(stripped_str_policy)
+
+            # Approximate normalization for S3 bucket policy (0.8720 factor)
+            usage = round(char_count / 20480 * 0.8720, 4)  # 20 KB limit for S3 bucket policy
+            char_left = 20480 - (usage * 20480)
+
+            if usage >= threshold:
+                warning_buckets.append({
+                    'bucket_name': bucket_name,
+                    'usage': usage,
+                    'charleft': char_left
+                })
+
+        except Exception as e:
+            if e.response["Error"]["Code"] == "NoSuchBucketPolicy":
+                #print(f"No policy found for bucket: {bucket_name}")
+                
+                if 0 >= threshold:
+                    warning_buckets.append({
+                        'bucket_name': bucket_name,
+                        'usage': 0,
+                        'charleft': 20480
+                    })
+            
+            else:
+                print(f"Issue processing bucket: {bucket_name} - {str(e)}")
+        
+    print("S3 Buckets Scanned: " + str(len(buckets)))
+    print(f"S3 Buckets with policy usage over {threshold:.2%} " + str(len(warning_buckets)))
+    print('\n')
+    print(f"List of buckets with more than {threshold:.2%} policy bytes usage: ")
+
+    for bucket in warning_buckets:
+        print(bucket['bucket_name'])
+        print(f"Bucket Policy Usage: {bucket['usage']:.2%}")
+        print("Bytes Left: " + str(bucket['charleft']) + '\n')
+
 
 elif limit == 'Organizations SCPs' or limit == 'Organizations RCPs': 
     try:

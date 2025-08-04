@@ -32,6 +32,7 @@ python3 aws-size.py --profile <your_profile_here> --region us-east-1
  » AWS IAM Managed Policies
    AWS IAM Role Trust Policy
    AWS EC2 User Data
+   S3 Bucket Policy
    Organizations SCPs
    Organizations RCPs
 ```
@@ -76,6 +77,7 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 | IAM | Managed Policies | Policy Length | 6,144 characters | L-ED111B8C | No | No | No |
 | IAM | IAM Roles | Role trust policy length | 2,048 characters | L-C07B4B0D | No | No | Yes |
 | EC2 | Instance | User Data Size | 16 KB | No | No | No | No |
+| S3 | Bucket | Bucket Policy Size | 20 KB | L-748707F3 | No | No | No |
 | Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
 | Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | No |
 
@@ -95,8 +97,13 @@ Note: white space doesn't count.  This limit is adjustable up to 4,096.
 ### EC2 User Data (Region Specific)
 
 Limit: 16 KB  
-Note: 16 KB is the limit for unencoded.  EC2 encodes user data  
+Note: 16 KB is the limit for unencoded.  EC2 encodes user data.  
 [EC2 User Data Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
+
+### S3 Bucket Policy Size (Region Specific)
+
+Limit: 20 KB  
+Note: AWS does some normalization on bucket policies.  aws-size will approximate the normalization - the numbers may be slighty different.
 
 ### AWS Organizations Service Control Policies (Global)
 

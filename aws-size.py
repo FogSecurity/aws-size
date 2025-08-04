@@ -18,7 +18,8 @@ supported_limits = [
         "AWS IAM Role Trust Policy",
         "AWS EC2 User Data",
         "Organizations SCPs",
-        "Organizations RCPs"
+        "Organizations RCPs",
+        "AWS KMS Key Policies"
 ]
 
 limit = questionary.select(
@@ -254,6 +255,8 @@ elif limit == "AWS EC2 User Data":
         print(f"Size Left: {instance['sizeleft']} Bytes \n")
 
 elif limit == 'Organizations SCPs' or limit == 'Organizations RCPs': 
+
+
     try:
         session = boto3.Session(profile_name = args.profile)
         organizations_client = session.client('organizations')
@@ -324,3 +327,46 @@ elif limit == 'Organizations SCPs' or limit == 'Organizations RCPs':
         print(policy['policy_name'])
         print(f"{selected_resource} Usage: {policy['usage']:.2%}")
         print("Characters Left: " + str(policy['charleft']) + '\n')
+
+elif limit == "AWS KMS Key Policies":
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        kms_client = session.client('kms')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        kms_results = [
+            kms_client.get_paginator('list_keys')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing KMS keys")
+        sys.exit()
+        
+    keys = kms_results[0]['Keys']
+    warning_keys = []
+
+    for key in keys:
+        try:
+            key_arn = key['KeyArn']
+            key_policy = kms_client.get_key_policy(
+                KeyId=key_arn
+            )
+
+            key_policy_doc = key_policy['Policy']
+        
+        except:
+            print(f"Issue processing key policy: {key_arn}")
+            continue
+        
+        str_key_policy = json.dumps(key_policy_doc, indent=None, separators=(',', ':'))
+
+        stripped_str_policy = str_key_policy.replace(" ", "")
+        char_count = len(stripped_str_policy)
+
+        print(char_count)
+
+        #32768

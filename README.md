@@ -97,12 +97,13 @@ Note: white space doesn't count.  This limit is adjustable up to 4,096.
 ### EC2 User Data (Region Specific)
 
 Limit: 16 KB  
-Note: 16 KB is the limit for unencoded.  EC2 encodes user data  
+Note: 16 KB is the limit for unencoded.  EC2 encodes user data.  
 [EC2 User Data Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html)
 
 ### S3 Bucket Policy Size (Region Specific)
 
 Limit: 20 KB  
+Note: AWS does some normalization on bucket policies.  aws-size will approximate the normalization - the numbers may be slighty different.
 
 ### AWS Organizations Service Control Policies (Global)
 

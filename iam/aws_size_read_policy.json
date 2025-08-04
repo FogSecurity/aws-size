@@ -12,6 +12,8 @@
                 "iam:GetRole",
                 "ec2:DescribeInstances",
                 "ec2:DescribeInstanceAttribute",
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketPolicy",
                 "organizations:ListPolicies",
                 "organizations:DescribePolicy",
                 "servicequotas:GetServiceQuota"

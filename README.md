@@ -1,7 +1,8 @@
 # aws-size
 Checks Hard to Find Size Limits and Usage for AWS and can provide advance warning to teams about resource limits in AWS before it's too late.  Usage of these limits are not covered by AWS provided tooling such as Service Quotas and Trusted Advisor.
 
-For support or questions, we can be reached at info@fogsecurity.io.
+For support or questions, we can be reached at info@fogsecurity.io.  
+Release Blog: [https://www.fogsecurity.io/blog/aws-size-release](https://www.fogsecurity.io/blog/aws-size-release)  
 
 ## Overview
 

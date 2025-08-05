@@ -367,6 +367,7 @@ elif limit == 'Organizations SCPs' or limit == 'Organizations RCPs':
             policy_id = policy['Id']
             policy_name = policy['Name']
 
+            #Policy will automatically remove whitespace if saved via console.  Whitespace is not removed if saved via CLI/API.
             char_count = len(policy_content)
 
             char_left = 5120 - char_count

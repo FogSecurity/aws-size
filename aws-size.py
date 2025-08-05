@@ -328,7 +328,8 @@ elif limit == "S3 Bucket Policy":
 elif (limit == 'Organizations SCPs' or
     limit == 'Organizations RCPs' or
     limit == 'Organizations Declarative Policies' or
-    limit == 'Organizations AI Services Opt-Out Policies'): 
+    limit == 'Organizations AI Services Opt-Out Policies')
+
     
     try:
         session = boto3.Session(profile_name = args.profile)
@@ -350,6 +351,7 @@ elif (limit == 'Organizations SCPs' or
         selected_resource = "AI Services Opt-Out Policy"
         size_limit = 2500
 
+
     try:
 
         if selected_resource == "SCP":
@@ -360,7 +362,7 @@ elif (limit == 'Organizations SCPs' or
             org_filter = 'DECLARATIVE_POLICY_EC2'
         elif selected_resource == "AI Services Opt-Out Policy":
             org_filter = 'AISERVICES_OPT_OUT_POLICY'
-            
+
         organizations_results = [
             organizations_client.get_paginator('list_policies')
             .paginate(

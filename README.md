@@ -86,6 +86,7 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 | Organizations | Declarative Policies | Document Size | 10,000 characters | No | No | No | No | No |
 | Organizations | AI Services Opt-out Policies | Document Size | 2,500 characters | No | No | No | No | No |
 
+
 ### IAM Managed Policies (Global)
 
 Limit: 6,144 characters  
@@ -130,5 +131,11 @@ Note: If policies are saved via CLI or SDK, white space is preserved.  This oper
 ### AWS Organizations AI Services Opt-out Policies (Global)
 
 Limit: 2,500 characters 
+Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
+[Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)
+
+### AWS Organizations Declarative Policies (Global)
+
+Limit: 10,000 characters 
 Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
 [Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)

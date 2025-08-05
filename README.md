@@ -36,6 +36,7 @@ python3 aws-size.py --profile <your_profile_here> --region us-east-1
    S3 Bucket Policy
    Organizations SCPs
    Organizations RCPs
+   Organizations Declarative Policies
 ```
 
 Note: Region is only necessary if choosing resources that are regional such as EC2 instances and user data.  IAM is a global service.

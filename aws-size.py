@@ -19,7 +19,8 @@ supported_limits = [
         "AWS EC2 User Data",
         "S3 Bucket Policy",
         "Organizations SCPs",
-        "Organizations RCPs"
+        "Organizations RCPs",
+        "Organizations Declarative Policies"
 ]
 
 limit = questionary.select(
@@ -323,7 +324,10 @@ elif limit == "S3 Bucket Policy":
         print("Bytes Left: " + str(bucket['charleft']) + '\n')
 
 
-elif limit == 'Organizations SCPs' or limit == 'Organizations RCPs': 
+elif (limit == 'Organizations SCPs' or
+    limit == 'Organizations RCPs' or
+    limit == 'Organizations Declarative Policies'): 
+    
     try:
         session = boto3.Session(profile_name = args.profile)
         organizations_client = session.client('organizations')
@@ -333,8 +337,13 @@ elif limit == 'Organizations SCPs' or limit == 'Organizations RCPs':
 
     if limit == 'Organizations SCPs':
         selected_resource = "SCP"
+        size_limit = 5120
     elif limit == 'Organizations RCPs':
         selected_resource = "RCP"
+        size_limit = 5120
+    elif limit == "Organizations Declarative Policies":
+        selected_resource = "Declarative Policy"
+        size_limit = 10000
 
     try:
 
@@ -342,6 +351,8 @@ elif limit == 'Organizations SCPs' or limit == 'Organizations RCPs':
             org_filter = 'SERVICE_CONTROL_POLICY'
         elif selected_resource == "RCP":
             org_filter = 'RESOURCE_CONTROL_POLICY'
+        elif selected_resource == "Declarative Policy":
+            org_filter = 'DECLARATIVE_POLICY_EC2'
 
         organizations_results = [
             organizations_client.get_paginator('list_policies')
@@ -367,10 +378,11 @@ elif limit == 'Organizations SCPs' or limit == 'Organizations RCPs':
             policy_id = policy['Id']
             policy_name = policy['Name']
 
+            #Policy will automatically remove whitespace if saved via console.  Whitespace is not removed if saved via CLI/API.
             char_count = len(policy_content)
 
-            char_left = 5120 - char_count
-            usage = round(char_count / 5120, 4)
+            char_left = size_limit - char_count
+            usage = round(char_count / size_limit, 4)
 
             if usage >= threshold:
                 warning_org_policies.append({

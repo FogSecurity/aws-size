@@ -152,7 +152,7 @@ Limit: 10,000 characters
 Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
 [Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)
 
-### AWS Organizations Chat Application Policies (Global)
+### AWS Organizations Chat Application (Q) Policies (Global)
 
 Limit: 10,000 characters 
 Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    

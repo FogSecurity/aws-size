@@ -20,7 +20,8 @@ supported_limits = [
         "S3 Bucket Policy",
         "Organizations SCPs",
         "Organizations RCPs",
-        "Organizations Declarative Policies"
+        "Organizations Declarative Policies",
+        "Organizations AI Services Opt-Out Policies"
 ]
 
 limit = questionary.select(
@@ -326,7 +327,9 @@ elif limit == "S3 Bucket Policy":
 
 elif (limit == 'Organizations SCPs' or
     limit == 'Organizations RCPs' or
-    limit == 'Organizations Declarative Policies'): 
+    limit == 'Organizations Declarative Policies' or
+    limit == 'Organizations AI Services Opt-Out Policies')
+
     
     try:
         session = boto3.Session(profile_name = args.profile)
@@ -344,6 +347,10 @@ elif (limit == 'Organizations SCPs' or
     elif limit == "Organizations Declarative Policies":
         selected_resource = "Declarative Policy"
         size_limit = 10000
+    elif limit == "Organizations AI Services Opt-Out Policies":
+        selected_resource = "AI Services Opt-Out Policy"
+        size_limit = 2500
+
 
     try:
 
@@ -353,6 +360,8 @@ elif (limit == 'Organizations SCPs' or
             org_filter = 'RESOURCE_CONTROL_POLICY'
         elif selected_resource == "Declarative Policy":
             org_filter = 'DECLARATIVE_POLICY_EC2'
+        elif selected_resource == "AI Services Opt-Out Policy":
+            org_filter = 'AISERVICES_OPT_OUT_POLICY'
 
         organizations_results = [
             organizations_client.get_paginator('list_policies')
@@ -362,7 +371,7 @@ elif (limit == 'Organizations SCPs' or
             .build_full_result()
         ]
     except:
-        print("Issue with listing " + selected_resource + "s")
+        print("Issue with listing " + selected_resource)
         sys.exit()
 
     org_policies = organizations_results[0]['Policies']

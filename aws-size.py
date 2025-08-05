@@ -358,6 +358,7 @@ elif (limit == 'Organizations SCPs' or
         size_limit = 2500
     elif limit == "Organizations Tag Policies":
         selected_resource = "Tag Policy"
+        size_limit = 10000
     elif limit == "Organizations Backup Policies":
         selected_resource = "Backup Policy"
         size_limit = 10000
@@ -425,7 +426,7 @@ elif (limit == 'Organizations SCPs' or
 
     #Eventually standardize output here
     #Output Section
-    print(f"Organizations {selected_resource} resources Scanned: " + str(len(org_policies)))
+    print(f"Organizations {selected_resource} resources scanned: " + str(len(org_policies)))
     print(f"Organizations {selected_resource} resources with usage over {threshold:.2%} " + str(len(warning_org_policies)))
     print('\n')
     print(f"{selected_resource} resources with more than {threshold:.2%} character usage: ")

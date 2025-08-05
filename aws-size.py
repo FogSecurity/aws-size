@@ -21,7 +21,10 @@ supported_limits = [
         "Organizations SCPs",
         "Organizations RCPs",
         "Organizations Declarative Policies",
-        "Organizations AI Services Opt-Out Policies"
+        "Organizations AI Services Opt-Out Policies",
+        "Organizations Tag Policies",
+        "Organizations Backup Policies",
+        "Organizations Chat Applications Policies"
 ]
 
 limit = questionary.select(
@@ -328,7 +331,11 @@ elif limit == "S3 Bucket Policy":
 elif (limit == 'Organizations SCPs' or
     limit == 'Organizations RCPs' or
     limit == 'Organizations Declarative Policies' or
-    limit == 'Organizations AI Services Opt-Out Policies'):
+    limit == 'Organizations AI Services Opt-Out Policies' or
+    limit == 'Organizations Tag Policies' or
+    limit == 'Organizations Backup Policies' or
+    limit == 'Organizations Chat Applications Policies' 
+    ):
     
     try:
         session = boto3.Session(profile_name = args.profile)
@@ -349,7 +356,14 @@ elif (limit == 'Organizations SCPs' or
     elif limit == "Organizations AI Services Opt-Out Policies":
         selected_resource = "AI Services Opt-Out Policy"
         size_limit = 2500
-
+    elif limit == "Organizations Tag Policies":
+        selected_resource = "Tag Policy"
+    elif limit == "Organizations Backup Policies":
+        selected_resource = "Backup Policy"
+        size_limit = 10000
+    elif limit == "Organizations Chat Applications Policies":
+        selected_resource = "Chat Application Policy"
+        size_limit = 10000
 
     try:
 
@@ -361,6 +375,12 @@ elif (limit == 'Organizations SCPs' or
             org_filter = 'DECLARATIVE_POLICY_EC2'
         elif selected_resource == "AI Services Opt-Out Policy":
             org_filter = 'AISERVICES_OPT_OUT_POLICY'
+        elif selected_resource == "Tag Policy":
+            org_filter = 'TAG_POLICY'
+        elif selected_resource == "Backup Policy":
+            org_filter = 'BACKUP_POLICY'
+        elif selected_resource == "Chat Application Policy":
+            org_filter = 'CHATBOT_POLICY'
 
         organizations_results = [
             organizations_client.get_paginator('list_policies')
@@ -405,10 +425,10 @@ elif (limit == 'Organizations SCPs' or
 
     #Eventually standardize output here
     #Output Section
-    print(f"Organizations {selected_resource}s Scanned: " + str(len(org_policies)))
-    print(f"Organizations {selected_resource}s with usage over {threshold:.2%} " + str(len(warning_org_policies)))
+    print(f"Organizations {selected_resource} resources Scanned: " + str(len(org_policies)))
+    print(f"Organizations {selected_resource} resources with usage over {threshold:.2%} " + str(len(warning_org_policies)))
     print('\n')
-    print(f"List of {selected_resource}s with more than {threshold:.2%} character usage: ")
+    print(f"{selected_resource} resources with more than {threshold:.2%} character usage: ")
 
     for policy in warning_org_policies:
         print(policy['policy_name'])

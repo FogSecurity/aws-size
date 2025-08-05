@@ -81,6 +81,7 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 | S3 | Bucket | Bucket Policy Size | 20 KB | L-748707F3 | No | No | No |
 | Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
 | Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | No |
+| Organizations | Declarative Policies | Document Size | 10,000 characters | No | No | No | No | No |
 
 
 ### IAM Managed Policies (Global)
@@ -108,12 +109,18 @@ Note: AWS does some normalization on bucket policies.  aws-size will approximate
 
 ### AWS Organizations Service Control Policies (Global)
 
-Limit: 5120 characters  
+Limit: 5,120 characters  
 Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
 [Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)
 
 ### AWS Organizations Resource Control Policies (Global)
 
-Limit: 5120 characters  
+Limit: 5,120 characters  
+Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
+[Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)
+
+### AWS Organizations Declarative Policies (Global)
+
+Limit: 10,000 characters 
 Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
 [Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)

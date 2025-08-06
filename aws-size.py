@@ -24,7 +24,8 @@ supported_limits = [
         "Organizations AI Services Opt-Out Policies",
         "Organizations Tag Policies",
         "Organizations Backup Policies",
-        "Organizations Chat Applications Policies"
+        "Organizations Chat Applications Policies",
+        "SSM Parameter Store Parameters"
 ]
 
 limit = questionary.select(
@@ -444,3 +445,69 @@ elif (limit == 'Organizations SCPs' or
             print(policy['policy_name'])
             print(f"{selected_resource} Usage: {policy['usage']:.2%}")
             print("Characters Left: " + str(policy['charleft']) + '\n')
+    
+elif limit == 'SSM Parameter Store Parameters':
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        ssm_client = session.client('ssm')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        ssm_results = [
+            ssm_client.get_paginator('describe_parameters')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing SSM parameters")
+        sys.exit()
+
+    ssm_parameters = ssm_results[0]['Parameters']
+    warning_ssm_parameters = []
+
+    for parameter in ssm_parameters:
+        try:
+            parameter_name = parameter['Name']
+            parameter_tier = parameter['Tier']
+            parameter_arn = parameter['ARN']
+
+            parameter_value = ssm_client.get_parameter(
+                Name=parameter_name,
+                WithDecryption=True
+            )
+
+            if parameter_tier == 'Standard':
+                param_size = 4906
+            elif parameter_tier == 'Advanced':
+                param_size = 8192
+
+            char_count = len(parameter_value['Parameter']['Value'])
+
+            char_left = param_size - char_count
+            usage = round(char_count / param_size, 4)
+
+            if usage >= threshold:
+                warning_ssm_parameters.append({
+                    'parameter_name': parameter_name,
+                    'usage': usage,
+                    'charleft': char_left
+                })
+
+        except:
+            print(f"Issue processing SSM parameter: {parameter_name}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("SSM Parameters Scanned: " + str(len(ssm_parameters)))
+    print(f"SSM Parameters with usage over {threshold:.2%} " + str(len(warning_ssm_parameters)))
+    print('\n')
+
+    if len(warning_ssm_parameters) > 0:
+        print(f"List of SSM parameters with more than {threshold:.2%} character usage: ")
+
+        for parameter in warning_ssm_parameters:
+            print(parameter['parameter_name'])
+            print(f"Parameter Usage: {parameter['usage']:.2%}")
+            print("Characters Left: " + str(parameter['charleft']) + '\n')

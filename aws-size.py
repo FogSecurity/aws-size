@@ -25,7 +25,8 @@ supported_limits = [
         "Organizations Tag Policies",
         "Organizations Backup Policies",
         "Organizations Chat Applications Policies",
-        "SSM Parameter Store Parameters"
+        "SSM Parameter Store Parameters",
+        "Lambda Environment Variables"
 ]
 
 limit = questionary.select(
@@ -512,3 +513,67 @@ elif limit == 'SSM Parameter Store Parameters':
             print(parameter['parameter_name'])
             print(f"Parameter Usage: {parameter['usage']:.2%}")
             print("Characters Left: " + str(parameter['charleft']) + '\n')
+
+
+elif limit == 'Lambda Environment Variables':
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        lambda_client = session.client('lambda')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+        
+    try:
+        lambda_results = [
+            lambda_client.get_paginator('list_functions')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing Lambda functions")
+        sys.exit()
+    
+    lambda_functions = lambda_results[0]['Functions']
+    warning_lambda_functions = []
+
+    for function in lambda_functions:
+        try:
+            function_name = function['FunctionName']
+            function_arn = function['FunctionArn']
+            if function.get('Environment'):
+                function_env = function.get('Environment')
+
+                env_var_size = sum(len(key) + len(value) + 6 for key, value in function_env['Variables'].items())
+                #Add 5 characters per key value pair for quotes, comma, and colon
+
+                print(env_var_size)
+                char_left = 4096 - env_var_size
+                usage = round(env_var_size / 4096, 4)
+
+            else:
+                # If no environment variables, consider it 0 usage
+                char_left = 4096
+                usage = 0
+
+            if usage >= threshold:
+                    warning_lambda_functions.append({
+                        'function_name': function_name,
+                        'usage': usage,
+                        'charleft': char_left
+                    })
+        except:
+            print(f"Issue processing Lambda function: {function_name}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("Lambda Functions Scanned: " + str(len(lambda_functions)))
+    print(f"Lambda Functions with environment variable usage over {threshold:.2%} " + str(len(warning_lambda_functions)))
+    print('\n')
+
+    if len(warning_lambda_functions) > 0:
+        print(f"List of Lambda functions with more than {threshold:.2%} environment variable size usage: ")
+
+        for function in warning_lambda_functions:
+            print(function['function_name'])
+            print(f"Environment Variable Usage: {function['usage']:.2%}")
+            print("Characters Left: " + str(function['charleft']) + '\n')

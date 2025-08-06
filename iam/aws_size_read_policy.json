@@ -25,7 +25,9 @@
             "Sid": "AwsSizeParamaterAndSecretSize",
             "Effect": "Allow",
             "Action": [
-                "kms:Decrypt"
+                "kms:Decrypt",
+                "ssm:DescribeParameters",
+                "ssm:GetParameter"
             ],
             "Resource": "*"
         }

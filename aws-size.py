@@ -26,7 +26,8 @@ supported_limits = [
         "Organizations Backup Policies",
         "Organizations Chat Applications Policies",
         "SSM Parameter Store Parameters",
-        "Lambda Environment Variables"
+        "Lambda Environment Variables",
+        "Secrets Manager Secrets"
 ]
 
 limit = questionary.select(
@@ -546,7 +547,6 @@ elif limit == 'Lambda Environment Variables':
                 env_var_size = sum(len(key) + len(value) + 6 for key, value in function_env['Variables'].items())
                 #Add 5 characters per key value pair for quotes, comma, and colon
 
-                print(env_var_size)
                 char_left = 4096 - env_var_size
                 usage = round(env_var_size / 4096, 4)
 
@@ -577,3 +577,64 @@ elif limit == 'Lambda Environment Variables':
             print(function['function_name'])
             print(f"Environment Variable Usage: {function['usage']:.2%}")
             print("Characters Left: " + str(function['charleft']) + '\n')
+
+elif limit == 'Secrets Manager Secrets':
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        secretsmanager_client = session.client('secretsmanager')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        secretsmanager_results = [
+            secretsmanager_client.get_paginator('list_secrets')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing Secrets Manager secrets")
+        sys.exit()
+
+    secretsmanager_secrets = secretsmanager_results[0]['SecretList']
+    warning_secretsmanager_secrets = []
+
+    for secret in secretsmanager_secrets:
+        try:
+            secret_name = secret['Name']
+            secret_arn = secret['ARN']
+
+            secret_value = secretsmanager_client.get_secret_value(
+                SecretId=secret_arn
+            )
+
+            secret_size = len(secret_value['SecretString'])
+
+            char_left = 65536 - secret_size
+            usage = round(secret_size / 65536, 4)
+
+            if usage >= threshold:
+                warning_secretsmanager_secrets.append({
+                    'secret_name': secret_name,
+                    'usage': usage,
+                    'charleft': char_left
+                })
+
+        except:
+            print(f"Issue processing Secrets Manager secret: {secret_name}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("Secrets Manager Secrets Scanned: " + str(len(secretsmanager_secrets)))
+    print(f"Secrets Manager Secrets with usage over {threshold:.2%} " + str(len(warning_secretsmanager_secrets)))
+    print('\n')
+
+    if len(warning_secretsmanager_secrets) > 0:
+        print(f"List of Secrets Manager secrets with more than {threshold:.2%} character usage: ")
+
+        for secret in warning_secretsmanager_secrets:
+            print(secret['secret_name'])
+            print(f"Secret Usage: {secret['usage']:.2%}")
+            print("Characters Left: " + str(secret['charleft']) + '\n')
+
+

@@ -110,13 +110,14 @@ if limit == 'AWS IAM Managed Policies':
     print("Customer Managed Policies Scanned: " + str(len(managed_policies_stats)))
     print(f"Customer Managed Policies with usage over {threshold:.2%} " + str(len(warning_policies)))
     print('\n')
-    print(f"List of policies with more than {threshold:.2%} character usage: ")
 
-    
-    for policy in warning_policies:
-        print(policy['arn'])
-        print(f"Policy Usage: {policy['usage']:.2%}")
-        print("Characters Left: " + str(policy['charleft']) + '\n')
+    if len(warning_policies) > 0:
+        print(f"List of policies with more than {threshold:.2%} character usage: ")
+
+        for policy in warning_policies:
+            print(policy['arn'])
+            print(f"Policy Usage: {policy['usage']:.2%}")
+            print("Characters Left: " + str(policy['charleft']) + '\n')
 
 elif limit == 'AWS IAM Role Trust Policy':
     try:
@@ -186,12 +187,14 @@ elif limit == 'AWS IAM Role Trust Policy':
     print("IAM Roles Scanned: " + str(len(roles)))
     print(f"IAM Roles with Trust Policy usage over {threshold:.2%} " + str(len(warning_roles)))
     print('\n')
-    print(f"List of roles with more than {threshold:.2%} trust policy length character usage: ")
 
-    for role in warning_roles:
-        print(role['arn'])
-        print(f"Trust Policy Usage: {role['usage']:.2%}")
-        print("Characters Left: " + str(role['charleft']) + '\n')
+    if len(warning_roles) > 0:
+        print(f"List of roles with more than {threshold:.2%} trust policy length character usage: ")
+
+        for role in warning_roles:
+            print(role['arn'])
+            print(f"Trust Policy Usage: {role['usage']:.2%}")
+            print("Characters Left: " + str(role['charleft']) + '\n')
 
 elif limit == "AWS EC2 User Data":
     try:
@@ -252,12 +255,14 @@ elif limit == "AWS EC2 User Data":
     print("EC2 Instances Scanned: " + str(len(instances)))
     print(f"EC2 Instances with usage over {threshold:.2%} " + str(len(warning_instances)))
     print('\n')
-    print(f"List of instances with more than {threshold:.2%} size usage: ")
 
-    for instance in warning_instances:
-        print(instance['instance_id'])
-        print(f"Instance Usage: {instance['usage']:.2%}")
-        print(f"Size Left: {instance['sizeleft']} Bytes \n")
+    if len(warning_instances) > 0:
+        print(f"List of instances with more than {threshold:.2%} size usage: ")
+
+        for instance in warning_instances:
+            print(instance['instance_id'])
+            print(f"Instance Usage: {instance['usage']:.2%}")
+            print(f"Size Left: {instance['sizeleft']} Bytes \n")
 
 elif limit == "S3 Bucket Policy":
     try:
@@ -320,12 +325,14 @@ elif limit == "S3 Bucket Policy":
     print("S3 Buckets Scanned: " + str(len(buckets)))
     print(f"S3 Buckets with policy usage over {threshold:.2%} " + str(len(warning_buckets)))
     print('\n')
-    print(f"List of buckets with more than {threshold:.2%} policy bytes usage: ")
 
-    for bucket in warning_buckets:
-        print(bucket['bucket_name'])
-        print(f"Bucket Policy Usage: {bucket['usage']:.2%}")
-        print("Bytes Left: " + str(bucket['charleft']) + '\n')
+    if len(warning_buckets) > 0:
+        print(f"List of buckets with more than {threshold:.2%} policy bytes usage: ")
+
+        for bucket in warning_buckets:
+            print(bucket['bucket_name'])
+            print(f"Bucket Policy Usage: {bucket['usage']:.2%}")
+            print("Bytes Left: " + str(bucket['charleft']) + '\n')
 
 
 elif (limit == 'Organizations SCPs' or
@@ -429,9 +436,11 @@ elif (limit == 'Organizations SCPs' or
     print(f"Organizations {selected_resource} resources scanned: " + str(len(org_policies)))
     print(f"Organizations {selected_resource} resources with usage over {threshold:.2%} " + str(len(warning_org_policies)))
     print('\n')
-    print(f"{selected_resource} resources with more than {threshold:.2%} character usage: ")
 
-    for policy in warning_org_policies:
-        print(policy['policy_name'])
-        print(f"{selected_resource} Usage: {policy['usage']:.2%}")
-        print("Characters Left: " + str(policy['charleft']) + '\n')
+    if len(warning_org_policies) > 0:
+        print(f"{selected_resource} resources with more than {threshold:.2%} character usage: ")
+
+        for policy in warning_org_policies:
+            print(policy['policy_name'])
+            print(f"{selected_resource} Usage: {policy['usage']:.2%}")
+            print("Characters Left: " + str(policy['charleft']) + '\n')

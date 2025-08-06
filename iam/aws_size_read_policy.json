@@ -27,7 +27,8 @@
             "Action": [
                 "kms:Decrypt",
                 "ssm:DescribeParameters",
-                "ssm:GetParameter"
+                "ssm:GetParameter",
+                "lambda:ListFunctions"
             ],
             "Resource": "*"
         }

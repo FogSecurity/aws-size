@@ -22,7 +22,11 @@ We recommend least privilege when running aws-size and using short-term credenti
 
 If you are using aws-size to scan parameter or secret resources (Secrets Manager or Systems Manager Parameter Store), AWS provided managed policies may not work.  Secrets Manager requires `secretsmanager:GetSecretValue` which is not in any of the aforementioned AWS provided managed policies.  Parameter Store requires `ssm:GetParameter` which is not in SecurityAudit nor ViewOnlyAccess.  Additionally, certain resources will require `kms:Decrypt` if encrypted with a KMS key to retrieve length of data.  
 
-A reference IAM policy for aws-size can be found [here](iam/aws_size_read_policy.json).
+IMPORTANT: aws-size has the ability to scan for potentially sensitive information such as Lambda Environment Variables, Secrets Manager Secrets, and Parameter Store Parameters.  For accurate sizing and limit calculations, aws-size will need access to the underlying information and resource values.  We recommend ensuring access to aws-size, aws-size's credentials are secure, and that any privileged permissions used by aws-size are not shared to other unintended use cases.  Aws-size can be run without those capabilities and thus if you do not have a need or desire to scan for potentially sensitive information, we recommend ensuring those corresponding IAM permissions are not given to aws-size.  See the [IAM reference](iam/) for additional references.
+
+If concerned about scanning secret values, we recommend not granting aws-size access to sensitive variables and only running aws-size on non-sensitive resources.
+
+A reference IAM policy for aws-size (all features) can be found [here](iam/aws_size_read_policy.json).
 
 To install required libraries, `pip3 install -r requirements.txt` can be run.
 

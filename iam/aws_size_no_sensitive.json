@@ -1,0 +1,25 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AwsSizeReadOnly",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListPolicies",
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "iam:ListRoles",
+                "iam:GetRole",
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceAttribute",
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketPolicy",
+                "organizations:ListPolicies",
+                "organizations:DescribePolicy",
+                "servicequotas:GetServiceQuota",
+                "kms:DescribeKey"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

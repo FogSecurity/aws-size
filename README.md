@@ -8,7 +8,7 @@ Release Blog: [https://www.fogsecurity.io/blog/aws-size-release](https://www.fog
 
 AWS services and resources have limits that can impact development.  These limits (sometimes referred to as Service Quotas) can sometimes be adjustable (soft limits) or not (hard limits).  In some cases, these can make development difficult as running into a limit late can result in larger or risky architectural changes.  While AWS offers tooling to manage these and view visibility such as Service Quotas, Trusted Advisor, and more - these tools do not account for all limits and often refer to account or resource # limits, not necessarily limits within resources.  Even open source tooling we looked at focuses on similar limits and Trusted Advisor coverage.  aws-size addresses this gap in coverage and visibility.
 
-Current Coverage: IAM, Organizations, EC2, S3
+Current Coverage: IAM, Organizations, EC2, S3, Systems Manager
 
 Imagine a scenario where someone is trying to apply least privilege and has appropriately used condition keys, granular IAM actions, and resources in their IAM policies.  They may need to add another statement or action, but if they're out of character space - they will need to think creatively on how to adjust the policy.  This tool will help bring visibility into those limits.  Example workarounds in IAM are using wildcards (which can be dangerous), or splitting into multiple policies.  These changes can be complex and can result in different configurations or unintended results.
 
@@ -41,6 +41,7 @@ python3 aws-size.py --profile <your_profile_here> --region us-east-1
    Organizations Tag Policies
    Organizations Backup Policies
    Organizations Chat Applications Policies
+   SSM Parameter Store Parameters
 ```
 
 Note: Region is only necessary if choosing resources that are regional such as EC2 instances and user data.  IAM is a global service.
@@ -85,12 +86,14 @@ python3 aws-size.py --profile <your_profile_here> --threshold 0
 | EC2 | Instance | User Data Size | 16 KB | No | No | No | No |
 | S3 | Bucket | Bucket Policy Size | 20 KB | L-748707F3 | No | No | No |
 | Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
-| Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | No |
-| Organizations | Declarative Policies | Document Size | 10,000 characters | No | No | No | No | No |
-| Organizations | AI Services Opt-out Policies | Document Size | 2,500 characters | No | No | No | No | No |
-| Organizations | Tag Policies | Document Size | 10,000 characters | No | No | No | No | No |
-| Organizations | Backup Policies | Document Size | 10,000 characters | No | No | No | No | No |
-| Organizations | Chat Application Policies | Document Size | 10,000 characters | No | No | No | No | No |
+| Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | 
+| Organizations | Declarative Policies | Document Size | 10,000 characters | No | No | No | No | 
+| Organizations | AI Services Opt-out Policies | Document Size | 2,500 characters | No | No | No | No | 
+| Organizations | Tag Policies | Document Size | 10,000 characters | No | No | No | No | 
+| Organizations | Backup Policies | Document Size | 10,000 characters | No | No | No | No | 
+| Organizations | Chat Application Policies | Document Size | 10,000 characters | No | No | No | No | 
+| Systems Manager | Parameter Store Standard Parameter | Size | 4 KB | L-BCC99751 | No | No | No | 
+| Systems Manager | Parameter Store Advanced Parameter | Size | 8 KB | L-CECCEB04 | No | No | No | 
 
 
 ### IAM Managed Policies (Global)
@@ -157,3 +160,9 @@ Note: If policies are saved via CLI or SDK, white space is preserved.  This oper
 Limit: 10,000 characters  
 Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
 [Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)
+
+### Systems Manager Parameter Store Parameter (Region Specific)
+
+Limit: 4 KB (Standard)
+Limit: 8 KB (Advanced)
+Note: Decryption may be necessary to determine accurate size of parameters.

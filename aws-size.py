@@ -444,6 +444,7 @@ elif (limit == 'Organizations SCPs' or
         for policy in warning_org_policies:
             print(policy['policy_name'])
             print(f"{selected_resource} Usage: {policy['usage']:.2%}")
+<<<<<<< HEAD
             print("Characters Left: " + str(policy['charleft']) + '\n')
     
 elif limit == 'SSM Parameter Store Parameters':

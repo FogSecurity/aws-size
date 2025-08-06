@@ -110,13 +110,14 @@ if limit == 'AWS IAM Managed Policies':
     print("Customer Managed Policies Scanned: " + str(len(managed_policies_stats)))
     print(f"Customer Managed Policies with usage over {threshold:.2%} " + str(len(warning_policies)))
     print('\n')
-    print(f"List of policies with more than {threshold:.2%} character usage: ")
 
-    
-    for policy in warning_policies:
-        print(policy['arn'])
-        print(f"Policy Usage: {policy['usage']:.2%}")
-        print("Characters Left: " + str(policy['charleft']) + '\n')
+    if len(warning_policies) > 0:
+        print(f"List of policies with more than {threshold:.2%} character usage: ")
+
+        for policy in warning_policies:
+            print(policy['arn'])
+            print(f"Policy Usage: {policy['usage']:.2%}")
+            print("Characters Left: " + str(policy['charleft']) + '\n')
 
 elif limit == 'AWS IAM Role Trust Policy':
     try:

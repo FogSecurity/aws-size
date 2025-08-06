@@ -28,7 +28,9 @@
                 "kms:Decrypt",
                 "ssm:DescribeParameters",
                 "ssm:GetParameter",
-                "lambda:ListFunctions"
+                "lambda:ListFunctions",
+                "secretsmanager:ListSecrets",
+                "secretsmanager:GetSecretValue"
             ],
             "Resource": "*"
         }

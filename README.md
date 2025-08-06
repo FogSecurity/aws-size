@@ -182,3 +182,4 @@ Note: Decryption may be necessary to determine accurate size of environment vari
 ### Secrets Manager Secrets (Region Specific)
 
 Limit: 65,536 bytes
+Note: To accurately determine size of secrets, `secretsmanager:GetSecretValue` and `kms:Decrypt` may be needed.  Check IAM permissions for aws-size.

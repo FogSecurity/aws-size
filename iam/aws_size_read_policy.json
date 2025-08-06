@@ -16,7 +16,21 @@
                 "s3:GetBucketPolicy",
                 "organizations:ListPolicies",
                 "organizations:DescribePolicy",
-                "servicequotas:GetServiceQuota"
+                "servicequotas:GetServiceQuota",
+                "kms:DescribeKey"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AwsSizeParamaterAndSecretSize",
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt",
+                "ssm:DescribeParameters",
+                "ssm:GetParameter",
+                "lambda:ListFunctions",
+                "secretsmanager:ListSecrets",
+                "secretsmanager:GetSecretValue"
             ],
             "Resource": "*"
         }

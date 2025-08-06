@@ -24,7 +24,10 @@ supported_limits = [
         "Organizations AI Services Opt-Out Policies",
         "Organizations Tag Policies",
         "Organizations Backup Policies",
-        "Organizations Chat Applications Policies"
+        "Organizations Chat Applications Policies",
+        "SSM Parameter Store Parameters",
+        "Lambda Environment Variables",
+        "Secrets Manager Secrets"
 ]
 
 limit = questionary.select(
@@ -443,4 +446,195 @@ elif (limit == 'Organizations SCPs' or
         for policy in warning_org_policies:
             print(policy['policy_name'])
             print(f"{selected_resource} Usage: {policy['usage']:.2%}")
+
             print("Characters Left: " + str(policy['charleft']) + '\n')
+    
+elif limit == 'SSM Parameter Store Parameters':
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        ssm_client = session.client('ssm')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        ssm_results = [
+            ssm_client.get_paginator('describe_parameters')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing SSM parameters")
+        sys.exit()
+
+    ssm_parameters = ssm_results[0]['Parameters']
+    warning_ssm_parameters = []
+
+    for parameter in ssm_parameters:
+        try:
+            parameter_name = parameter['Name']
+            parameter_tier = parameter['Tier']
+            parameter_arn = parameter['ARN']
+
+            parameter_value = ssm_client.get_parameter(
+                Name=parameter_name,
+                WithDecryption=True
+            )
+
+            if parameter_tier == 'Standard':
+                param_size = 4906
+            elif parameter_tier == 'Advanced':
+                param_size = 8192
+
+            char_count = len(parameter_value['Parameter']['Value'])
+
+            char_left = param_size - char_count
+            usage = round(char_count / param_size, 4)
+
+            if usage >= threshold:
+                warning_ssm_parameters.append({
+                    'parameter_name': parameter_name,
+                    'usage': usage,
+                    'charleft': char_left
+                })
+
+        except:
+            print(f"Issue processing SSM parameter: {parameter_name}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("SSM Parameters Scanned: " + str(len(ssm_parameters)))
+    print(f"SSM Parameters with usage over {threshold:.2%} " + str(len(warning_ssm_parameters)))
+    print('\n')
+
+    if len(warning_ssm_parameters) > 0:
+        print(f"List of SSM parameters with more than {threshold:.2%} character usage: ")
+
+        for parameter in warning_ssm_parameters:
+            print(parameter['parameter_name'])
+            print(f"Parameter Usage: {parameter['usage']:.2%}")
+            print("Characters Left: " + str(parameter['charleft']) + '\n')
+
+
+elif limit == 'Lambda Environment Variables':
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        lambda_client = session.client('lambda')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+        
+    try:
+        lambda_results = [
+            lambda_client.get_paginator('list_functions')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing Lambda functions")
+        sys.exit()
+    
+    lambda_functions = lambda_results[0]['Functions']
+    warning_lambda_functions = []
+
+    for function in lambda_functions:
+        try:
+            function_name = function['FunctionName']
+            function_arn = function['FunctionArn']
+            if function.get('Environment'):
+                function_env = function.get('Environment')
+
+                env_var_size = sum(len(key) + len(value) + 6 for key, value in function_env['Variables'].items())
+                #Add 5 characters per key value pair for quotes, comma, and colon
+
+                char_left = 4096 - env_var_size
+                usage = round(env_var_size / 4096, 4)
+
+            else:
+                # If no environment variables, consider it 0 usage
+                char_left = 4096
+                usage = 0
+
+            if usage >= threshold:
+                    warning_lambda_functions.append({
+                        'function_name': function_name,
+                        'usage': usage,
+                        'charleft': char_left
+                    })
+        except:
+            print(f"Issue processing Lambda function: {function_name}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("Lambda Functions Scanned: " + str(len(lambda_functions)))
+    print(f"Lambda Functions with environment variable usage over {threshold:.2%} " + str(len(warning_lambda_functions)))
+    print('\n')
+
+    if len(warning_lambda_functions) > 0:
+        print(f"List of Lambda functions with more than {threshold:.2%} environment variable size usage: ")
+
+        for function in warning_lambda_functions:
+            print(function['function_name'])
+            print(f"Environment Variable Usage: {function['usage']:.2%}")
+            print("Characters Left: " + str(function['charleft']) + '\n')
+
+elif limit == 'Secrets Manager Secrets':
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        secretsmanager_client = session.client('secretsmanager')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        secretsmanager_results = [
+            secretsmanager_client.get_paginator('list_secrets')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing Secrets Manager secrets")
+        sys.exit()
+
+    secretsmanager_secrets = secretsmanager_results[0]['SecretList']
+    warning_secretsmanager_secrets = []
+
+    for secret in secretsmanager_secrets:
+        try:
+            secret_name = secret['Name']
+            secret_arn = secret['ARN']
+
+            secret_value = secretsmanager_client.get_secret_value(
+                SecretId=secret_arn
+            )
+
+            secret_size = len(secret_value['SecretString'])
+
+            char_left = 65536 - secret_size
+            usage = round(secret_size / 65536, 4)
+
+            if usage >= threshold:
+                warning_secretsmanager_secrets.append({
+                    'secret_name': secret_name,
+                    'usage': usage,
+                    'charleft': char_left
+                })
+
+        except:
+            print(f"Issue processing Secrets Manager secret: {secret_name}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("Secrets Manager Secrets Scanned: " + str(len(secretsmanager_secrets)))
+    print(f"Secrets Manager Secrets with usage over {threshold:.2%} " + str(len(warning_secretsmanager_secrets)))
+    print('\n')
+
+    if len(warning_secretsmanager_secrets) > 0:
+        print(f"List of Secrets Manager secrets with more than {threshold:.2%} character usage: ")
+
+        for secret in warning_secretsmanager_secrets:
+            print(secret['secret_name'])
+            print(f"Secret Usage: {secret['usage']:.2%}")
+            print("Characters Left: " + str(secret['charleft']) + '\n')
+
+

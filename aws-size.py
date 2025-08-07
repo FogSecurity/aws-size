@@ -4,12 +4,14 @@ import questionary
 import base64
 import sys
 import json
+from datetime import datetime
 
 parser = argparse.ArgumentParser(prog='AWS Size')
 
 parser.add_argument("--profile")
 parser.add_argument("--threshold", help='Set threshold for reporting (between 0 and 1).  Default is 90%')
 parser.add_argument("--region")
+parser.add_argument("--output", help='Output file to save results.', default=None)
 
 args = parser.parse_args()
 
@@ -50,6 +52,22 @@ try:
 except: 
     print("Threshold must be a number between 0 and 1.  Running aws-size with default of 90%")
     threshold = 0.90
+
+def save_output_to_file(resources):
+    if args.output:
+    
+        output = {}
+
+        output['metadata'] = {
+                'resource': limit,
+                'threshold': threshold,
+                'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+
+        output['results'] = resources
+
+        with open(args.output, 'w') as f:
+            json.dump(output, f, indent=4)
 
 if limit == 'AWS IAM Managed Policies':
 
@@ -121,6 +139,8 @@ if limit == 'AWS IAM Managed Policies':
             print(policy['arn'])
             print(f"Policy Usage: {policy['usage']:.2%}")
             print("Characters Left: " + str(policy['charleft']) + '\n')
+    
+    save_output_to_file(warning_policies)
 
 elif limit == 'AWS IAM Role Trust Policy':
     try:
@@ -199,6 +219,8 @@ elif limit == 'AWS IAM Role Trust Policy':
             print(f"Trust Policy Usage: {role['usage']:.2%}")
             print("Characters Left: " + str(role['charleft']) + '\n')
 
+    save_output_to_file(warning_roles)
+
 elif limit == "AWS EC2 User Data":
     try:
         session = boto3.Session(profile_name = args.profile, region_name = args.region)
@@ -266,6 +288,8 @@ elif limit == "AWS EC2 User Data":
             print(instance['instance_id'])
             print(f"Instance Usage: {instance['usage']:.2%}")
             print(f"Size Left: {instance['sizeleft']} Bytes \n")
+
+    save_output_to_file(warning_instances)
 
 elif limit == "S3 Bucket Policy":
     try:
@@ -337,6 +361,7 @@ elif limit == "S3 Bucket Policy":
             print(f"Bucket Policy Usage: {bucket['usage']:.2%}")
             print("Bytes Left: " + str(bucket['charleft']) + '\n')
 
+    save_output_to_file(warning_buckets)
 
 elif (limit == 'Organizations SCPs' or
     limit == 'Organizations RCPs' or
@@ -449,6 +474,8 @@ elif (limit == 'Organizations SCPs' or
 
             print("Characters Left: " + str(policy['charleft']) + '\n')
     
+    save_output_to_file(warning_org_policies)
+
 elif limit == 'SSM Parameter Store Parameters':
     try:
         session = boto3.Session(profile_name = args.profile, region_name = args.region)
@@ -515,6 +542,7 @@ elif limit == 'SSM Parameter Store Parameters':
             print(f"Parameter Usage: {parameter['usage']:.2%}")
             print("Characters Left: " + str(parameter['charleft']) + '\n')
 
+    save_output_to_file(warning_ssm_parameters)
 
 elif limit == 'Lambda Environment Variables':
     try:
@@ -577,6 +605,8 @@ elif limit == 'Lambda Environment Variables':
             print(function['function_name'])
             print(f"Environment Variable Usage: {function['usage']:.2%}")
             print("Characters Left: " + str(function['charleft']) + '\n')
+    
+    save_output_to_file(warning_lambda_functions)
 
 elif limit == 'Secrets Manager Secrets':
     try:
@@ -636,5 +666,7 @@ elif limit == 'Secrets Manager Secrets':
             print(secret['secret_name'])
             print(f"Secret Usage: {secret['usage']:.2%}")
             print("Characters Left: " + str(secret['charleft']) + '\n')
+    
+    save_output_to_file(warning_secretsmanager_secrets)
 
 

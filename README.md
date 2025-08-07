@@ -87,6 +87,36 @@ python3 aws-size.py --profile <your_profile_here> --threshold all
 python3 aws-size.py --profile <your_profile_here> --threshold 0
 ```
 
+### Saving Output to File
+
+aws-size now supports saving the run results to a json file via the `--output` argument. To save, use the `--output` argument followed by the file name. Results are stored with metadata from the run.
+
+Example command:
+```
+python3 aws-size.py --profile <your_profile_here> --threshold 0.75 --output aws-size-output.json
+```
+
+Example of file structure is as follows:
+```
+{
+    "metadata": {
+        "resource": "AWS IAM Managed Policies",
+        "threshold": 0,
+        "timestamp": "2025-08-07 15:35:58"
+    },
+    "results": [
+        {
+            "arn": "arn:aws:iam::123412341234:policy/aws-size-test-policy",
+            "name": "aws-size-test-policy",
+            "usage": 0.0832,
+            "charleft": 5633
+        },
+        ...
+    ]
+}
+```
+
+
 ## Coverage
 
 | Service | Resource | Limit | Limit Size | Service Quota Coverage | Service Quota Visibility | Trusted Advisor Visibility | Adjustable |

@@ -18,6 +18,7 @@ args = parser.parse_args()
 supported_limits = [
         "AWS IAM Managed Policies",
         "AWS IAM Role Trust Policy",
+        "AWS IAM Managed Policies Per Role",
         "AWS EC2 User Data",
         "S3 Bucket Policy",
         "Organizations SCPs",
@@ -218,6 +219,77 @@ elif limit == 'AWS IAM Role Trust Policy':
             print(role['arn'])
             print(f"Trust Policy Usage: {role['usage']:.2%}")
             print("Characters Left: " + str(role['charleft']) + '\n')
+
+    save_output_to_file(warning_roles)
+
+elif limit == "AWS IAM Managed Policies Per Role":
+
+    try:
+        session = boto3.Session(profile_name = args.profile)
+        iam_client = session.client('iam')
+
+        sq_client = session.client('service-quotas', region_name = 'us-east-1')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        attached_policies_quota = sq_client.get_service_quota(
+            ServiceCode='iam',
+            QuotaCode='L-0DA4ABF3'
+        )
+    except:
+        print("Error retrieving Service Quota for IAM")
+        sys.exit()
+
+    try:
+        iam_roles_results = [
+            iam_client.get_paginator('list_roles')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing IAM roles")
+        sys.exit()
+
+    attached_policies_quota = attached_policies_quota['Quota']['Value']
+    roles = iam_roles_results[0]['Roles']
+    warning_roles = []
+
+    for role in roles:
+        arn = role['Arn']
+        name = role['RoleName']
+
+        try:
+            attached_policies = iam_client.list_attached_role_policies(RoleName=name)
+            attached_policies_count = len(attached_policies['AttachedPolicies'])
+            usage = round(attached_policies_count / attached_policies_quota, 4)
+
+            if usage >= threshold:
+                warning_roles.append({
+                    'arn': arn,
+                    'name': name,
+                    'usage': usage,
+                    'policies_left': attached_policies_quota - attached_policies_count
+                })
+
+        except:
+            print(f"Issue processing role: {arn}")
+
+    #Eventually standardize output here
+    #Output Section
+    print("IAM Roles Scanned: " + str(len(roles)))
+    print(f"IAM Roles with more than 10 attached policies: " + str(len(warning_roles)))
+    print('\n')
+
+    if len(warning_roles) > 0:
+        print("List of roles with more than 10 attached policies: ")
+
+        for role in warning_roles:
+            print(role['arn'])
+            print(f"Role Name: {role['name']}")
+            print(f"Attached Policies Usage: {role['usage']}\n")
+            print(f"Policies Left: {role['policies_left']}\n")
 
     save_output_to_file(warning_roles)
 

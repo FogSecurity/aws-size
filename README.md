@@ -40,6 +40,7 @@ python3 aws-size.py --profile <your_profile_here> --region us-east-1
 ? Select a resource limit (Use arrow keys)
  » AWS IAM Managed Policies
    AWS IAM Role Trust Policy
+   AWS IAM Managed Policies Per Role
    AWS EC2 User Data
    S3 Bucket Policy
    Organizations SCPs
@@ -122,9 +123,10 @@ Example of file structure is as follows:
 | Service | Resource | Limit | Limit Size | Service Quota Coverage | Service Quota Visibility | Trusted Advisor Visibility | Adjustable |
 | ------- | -------- | ----- | ---------- | ---------------------- | ------------------------ | -------------------------- | ---------- |
 | IAM | Managed Policies | Policy Length | 6,144 characters | L-ED111B8C | No | No | No |
-| IAM | IAM Roles | Role trust policy length | 2,048 characters | L-C07B4B0D | No | No | Yes |
+| IAM | IAM Roles | Role trust policy length | 2,048 characters | L-C07B4B0D | No | Yes* | Yes |
+| IAM | IAM Roles | Managed Policies Per Role | 10 | L-0DA4ABF3 | Yes | Yes | No |
 | EC2 | Instance | User Data Size | 16 KB | No | No | No | No |
-| S3 | Bucket | Bucket Policy Size | 20 KB | L-748707F3 | No | No | No |
+| S3 | Bucket | Bucket Policy Size | 20 KB | L-748707F3 | No | No | No | 
 | Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
 | Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | 
 | Organizations | Declarative Policies | Document Size | 10,000 characters | No | No | No | No | 
@@ -137,6 +139,8 @@ Example of file structure is as follows:
 | Lambda | Lambda Environment Variables | Combined Size | 4 KB | L-6581F036 | No | No | No |
 | Secrets Manager | Secret | Value Size | 65,536 bytes | L-2F24C883 | No | No | No |
 
+Note: Yes* for service quota visibility means we do see some visibility.  This seems limited to resources that have been recently updated.
+
 ### IAM Managed Policies (Global)
 
 Limit: 6,144 characters  
@@ -148,6 +152,11 @@ Note: white space doesn't count
 Limit: 2,048 characters.
 Note: white space doesn't count.  This limit is adjustable up to 4,096.
 [AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).
+
+### IAM Managed Policies Per Role (Global)
+
+Limit: 10 Managed Policies Per Role.
+Note: There is limited support in CloudWatch and Service Quotas.
 
 ### EC2 User Data (Region Specific)
 

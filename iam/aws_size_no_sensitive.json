@@ -9,6 +9,7 @@
                 "iam:GetPolicy",
                 "iam:GetPolicyVersion",
                 "iam:ListRoles",
+                "iam:ListAttachedRolePolicies",
                 "iam:GetRole",
                 "ec2:DescribeInstances",
                 "ec2:DescribeInstanceAttribute",

@@ -19,6 +19,9 @@ supported_limits = [
         "AWS IAM Managed Policies",
         "AWS IAM Role Trust Policy",
         "AWS IAM Managed Policies Per Role",
+        "AWS IAM Role Inline Policies",
+        "AWS IAM User Inline Policies",
+        "AWS IAM Group Inline Policies",
         "AWS EC2 User Data",
         "S3 Bucket Policy",
         "Organizations SCPs",
@@ -292,6 +295,269 @@ elif limit == "AWS IAM Managed Policies Per Role":
             print(f"Policies Left: {role['policies_left']}\n")
 
     save_output_to_file(warning_roles)
+
+elif limit == "AWS IAM Role Inline Policies":
+    try:
+        session = boto3.Session(profile_name = args.profile)
+        iam_client = session.client('iam')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        iam_roles_results = [
+            iam_client.get_paginator('list_roles')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing IAM roles")
+        sys.exit()
+
+    roles = iam_roles_results[0]['Roles']
+    warning_roles = []
+
+    for role in roles:
+        arn = role['Arn']
+        name = role['RoleName']
+
+        role_inline_policy_size = 0
+
+        try:
+            role_inline_policies_results = [
+                iam_client.get_paginator('list_role_policies')
+                .paginate(RoleName=name)
+                .build_full_result()
+            ]
+
+            if role_inline_policies_results[0].get('PolicyNames'):
+                inline_policies = role_inline_policies_results[0]['PolicyNames']
+            else:
+                inline_policies = []
+        
+            for inline_policy in inline_policies:
+
+                policy = iam_client.get_role_policy(
+                    RoleName=name,
+                    PolicyName=inline_policy
+                )
+
+                policy_doc = policy['PolicyDocument']
+
+                str_policy = json.dumps(policy_doc, indent=None, separators=(',', ':'))
+
+                #Strip white space
+                stripped_str_policy = str_policy.replace(" ", "")
+                char_count = len(stripped_str_policy)
+
+                role_inline_policy_size += char_count
+
+            usage = round(role_inline_policy_size / 10240, 4)
+            char_left = 10240 - role_inline_policy_size
+
+            if usage >= threshold:
+                warning_roles.append({
+                    'arn': arn,
+                    'name': name,
+                    'usage': usage,
+                    'charleft': char_left
+                })        
+        
+        except:
+            print("Issue with listing inline policies for role: " + name)
+            continue
+
+    #Eventually standardize output here
+    #Output Section
+    print("IAM Roles Scanned: " + str(len(roles)))
+    print(f"IAM Roles with inline policy usage over {threshold:.2%} " + str(len(warning_roles)))
+    print('\n')
+
+    if len(warning_roles) > 0:
+        print(f"List of roles with more than {threshold:.2%} inline policy character usage: ")
+
+        for role in warning_roles:
+            print(role['arn'])
+            print(f"Role Name: {role['name']}")
+            print(f"Inline Policy Usage: {role['usage']:.2%}")
+            print("Characters Left: " + str(role['charleft']) + '\n')
+
+    save_output_to_file(warning_roles)
+
+elif limit == "AWS IAM User Inline Policies":
+    try:
+        session = boto3.Session(profile_name = args.profile)
+        iam_client = session.client('iam')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        iam_users_results = [
+            iam_client.get_paginator('list_users')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing IAM users")
+        sys.exit()
+
+    users = iam_users_results[0]['Users']
+    warning_users = []
+
+    for user in users:
+        arn = user['Arn']
+        name = user['UserName']
+
+        user_inline_policy_size = 0
+
+        try:
+            user_inline_policies_results = [
+                iam_client.get_paginator('list_user_policies')
+                .paginate(UserName=name)
+                .build_full_result()
+            ]
+
+            if user_inline_policies_results[0].get('PolicyNames'):
+                inline_policies = user_inline_policies_results[0]['PolicyNames']
+            else:
+                inline_policies = []
+        
+            for inline_policy in inline_policies:
+
+                policy = iam_client.get_user_policy(
+                    UserName=name,
+                    PolicyName=inline_policy
+                )
+
+                policy_doc = policy['PolicyDocument']
+
+                str_policy = json.dumps(policy_doc, indent=None, separators=(',', ':'))
+
+                #Strip white space
+                stripped_str_policy = str_policy.replace(" ", "")
+                char_count = len(stripped_str_policy)
+
+                user_inline_policy_size += char_count
+
+            usage = round(user_inline_policy_size / 2048, 4)
+            char_left = 2048 - user_inline_policy_size
+
+            if usage >= threshold:
+                warning_users.append({
+                    'arn': arn,
+                    'name': name,
+                    'usage': usage,
+                    'charleft': char_left
+                })        
+        
+        except:
+            print("Issue with listing inline policies for user: " + name)
+            continue
+
+    #Eventually standardize output here
+    #Output Section
+    print("IAM Users Scanned: " + str(len(users)))
+    print(f"IAM Users with inline policy usage over {threshold:.2%} " + str(len(warning_users)))
+    print('\n')
+
+    if len(warning_users) > 0:
+        print(f"List of users with more than {threshold:.2%} inline policy character usage: ")
+
+        for user in warning_users:
+            print(user['arn'])
+            print(f"User Name: {user['name']}")
+            print(f"Inline Policy Usage: {user['usage']:.2%}")
+            print("Characters Left: " + str(user['charleft']) + '\n')
+
+    save_output_to_file(warning_users)
+
+elif limit == "AWS IAM Group Inline Policies":
+    try:
+        session = boto3.Session(profile_name = args.profile)
+        iam_client = session.client('iam')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
+
+    try:
+        iam_groups_results = [
+            iam_client.get_paginator('list_groups')
+            .paginate()
+            .build_full_result()
+        ]
+    except:
+        print("Issue with listing IAM groups")
+        sys.exit()
+
+    groups = iam_groups_results[0]['Groups']
+    warning_groups = []
+
+    for group in groups:
+        arn = group['Arn']
+        name = group['GroupName']
+
+        group_inline_policy_size = 0
+
+        try:
+            group_inline_policies_results = [
+                iam_client.get_paginator('list_group_policies')
+                .paginate(GroupName=name)
+                .build_full_result()
+            ]
+
+            if group_inline_policies_results[0].get('PolicyNames'):
+                inline_policies = group_inline_policies_results[0]['PolicyNames']
+            else:
+                inline_policies = []
+        
+            for inline_policy in inline_policies:
+
+                policy = iam_client.get_group_policy(
+                    GroupName=name,
+                    PolicyName=inline_policy
+                )
+
+                policy_doc = policy['PolicyDocument']
+
+                str_policy = json.dumps(policy_doc, indent=None, separators=(',', ':'))
+
+                #Strip white space
+                stripped_str_policy = str_policy.replace(" ", "")
+                char_count = len(stripped_str_policy)
+
+                group_inline_policy_size += char_count
+            
+            usage = round(group_inline_policy_size / 5120, 4)
+            char_left = 5120 - group_inline_policy_size
+
+            if usage >= threshold:
+                warning_groups.append({
+                    'arn': arn,
+                    'name': name,
+                    'usage': usage,
+                    'charleft': char_left
+                })
+
+        except:     
+            print("Issue with listing inline policies for group: " + name)
+            continue
+    #Eventually standardize output here
+    #Output Section
+    print("IAM Groups Scanned: " + str(len(groups)))
+    print(f"IAM Groups with inline policy usage over {threshold:.2%} " + str(len(warning_groups)))
+    print('\n')
+    
+    if len(warning_groups) > 0:
+        print(f"List of groups with more than {threshold:.2%} inline policy character usage: ")
+
+        for group in warning_groups:
+            print(group['arn'])
+            print(f"Group Name: {group['name']}")
+            print(f"Inline Policy Usage: {group['usage']:.2%}")
+            print("Characters Left: " + str(group['charleft']) + '\n') 
+        
+    save_output_to_file(warning_groups)
 
 elif limit == "AWS EC2 User Data":
     try:

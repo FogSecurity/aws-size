@@ -43,6 +43,9 @@ python3 aws-size.py --profile <your_profile_here> --region us-east-1
  » AWS IAM Managed Policies
    AWS IAM Role Trust Policy
    AWS IAM Managed Policies Per Role
+   AWS IAM Role Inline Policies
+   AWS IAM User Inline Policies
+   AWS IAM Group Inline Policies
    AWS EC2 User Data
    S3 Bucket Policy
    Organizations SCPs
@@ -127,6 +130,9 @@ Example of file structure is as follows:
 | IAM | Managed Policies | Policy Length | 6,144 characters | L-ED111B8C | No | No | No |
 | IAM | IAM Roles | Role trust policy length | 2,048 characters | L-C07B4B0D | No | Yes* | Yes |
 | IAM | IAM Roles | Managed Policies Per Role | 10 | L-0DA4ABF3 | Yes | Yes | No |
+| IAM | IAM Roles | Inline Policy Size | 10,240 characters | No | No | No | No |
+| IAM | IAM Users | Inline Policy Size | 2,048 characters |  No | No | No | No |
+| IAM | IAM Groups | Inline Policy Size | 5,120 characters | No | No | No | No |
 | EC2 | Instance | User Data Size | 16 KB | No | No | No | No |
 | S3 | Bucket | Bucket Policy Size | 20 KB | L-748707F3 | No | No | No | 
 | Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
@@ -159,6 +165,24 @@ Note: white space doesn't count.  This limit is adjustable up to 4,096.
 
 Limit: 10 Managed Policies Per Role.
 Note: There is limited support in CloudWatch and Service Quotas.
+
+### IAM Role Inline Policy Size (Global)
+
+Limit: 10,240 characters.  
+Note: This is the aggregate policy size (sum of all inline policies)  
+[AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).  
+
+### IAM User Inline Policy Size (Global)
+
+Limit: 2,048 characters.  
+Note: This is the aggregate policy size (sum of all inline policies)  
+[AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).  
+
+### IAM Group Inline Policy Size (Global)
+
+Limit: 5,120 characters.  
+Note: This is the aggregate policy size (sum of all inline policies)  
+[AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).  
 
 ### EC2 User Data (Region Specific)
 

@@ -33,7 +33,8 @@ supported_limits = [
         "Organizations Chat Applications Policies",
         "SSM Parameter Store Parameters",
         "Lambda Environment Variables",
-        "Secrets Manager Secrets"
+        "Secrets Manager Secrets",
+        "VPC Endpoint Policies"
 ]
 
 limit = questionary.select(
@@ -1007,4 +1008,28 @@ elif limit == 'Secrets Manager Secrets':
     
     save_output_to_file(warning_secretsmanager_secrets)
 
+elif limit == 'VPC Endpoint Policies':
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        ec2_client = session.client('ec2')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
 
+    try:
+        interface_endpoints_results = [
+            ec2_client.get_paginator('describe_vpc_endpoints')
+            .paginate(
+                Filters=[
+                    {
+                        'Name': 'vpc-endpoint-type',
+                        'Values': ['Interface']
+                    }
+                ]
+            )
+            .build_full_result()
+        ]
+
+    except:
+        print("Issue with listing Interface VPC Endpoints")
+        sys.exit()

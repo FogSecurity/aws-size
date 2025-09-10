@@ -33,7 +33,8 @@ supported_limits = [
         "Organizations Chat Applications Policies",
         "SSM Parameter Store Parameters",
         "Lambda Environment Variables",
-        "Secrets Manager Secrets"
+        "Secrets Manager Secrets",
+        "VPC Endpoint Policies"
 ]
 
 limit = questionary.select(
@@ -1007,4 +1008,84 @@ elif limit == 'Secrets Manager Secrets':
     
     save_output_to_file(warning_secretsmanager_secrets)
 
+elif limit == 'VPC Endpoint Policies':
+    try:
+        session = boto3.Session(profile_name = args.profile, region_name = args.region)
+        ec2_client = session.client('ec2')
+    except:
+        print("Potential authentication issue: check credentials and try again")
+        sys.exit()
 
+    try:
+        interface_endpoints_results = [
+            ec2_client.get_paginator('describe_vpc_endpoints')
+            .paginate(
+                Filters=[
+                    {
+                        'Name': 'vpc-endpoint-type',
+                        'Values': ['Interface']
+                    }
+                ]
+            )
+            .build_full_result()
+        ]
+
+        interface_vpc_endpoints = interface_endpoints_results[0]['VpcEndpoints']
+        
+        warning_vpc_endpoints = []
+        
+        for endpoint in interface_vpc_endpoints:
+            try:
+                endpoint_id = endpoint['VpcEndpointId']
+
+                if endpoint.get('ServiceName'):
+                    endpoint_service = endpoint['ServiceName']
+                else:
+                    endpoint_service = "N/A"
+              
+                if endpoint.get('PolicyDocument'):
+                    policy_document = endpoint['PolicyDocument']
+               
+                    char_count = len(policy_document)
+
+                    char_left = 20480 - char_count
+                    usage = round(char_count / 20480, 4)
+
+                    if usage >= threshold:
+                        warning_vpc_endpoints.append({
+                            'endpoint_id': endpoint_id,
+                            'endpoint_service': endpoint_service,
+                            'usage': usage,
+                            'charleft': char_left
+                        })
+                else:
+                    # If no policy document, consider it 0 usage
+                    if 0 >= threshold:
+                        warning_vpc_endpoints.append({
+                            'endpoint_id': endpoint_id,
+                            'endpoint_service': endpoint_service,
+                            'usage': 0,
+                            'charleft': 20480
+                        })
+
+            except:
+                print(f"Issue processing VPC Endpoint: {endpoint_id}")
+            
+        print("Interface VPC Endpoints Scanned: " + str(len(interface_vpc_endpoints)))
+        print(f"Interface VPC Endpoints with policy usage over {threshold:.2%} " + str(len(warning_vpc_endpoints)))
+        print('\n')
+
+        if len(warning_vpc_endpoints) > 0:
+            print(f"List of Interface VPC Endpoints with more than {threshold:.2%} policy character usage: ")
+
+            for endpoint in warning_vpc_endpoints:
+                print(endpoint['endpoint_id'])
+                print(f"Service Name: {endpoint['endpoint_service']}")
+                print(f"Policy Usage: {endpoint['usage']:.2%}")
+                print("Characters Left: " + str(endpoint['charleft']) + '\n')
+        
+        save_output_to_file(warning_vpc_endpoints)
+
+    except:
+        print("Issue with listing Interface VPC Endpoints")
+        sys.exit()

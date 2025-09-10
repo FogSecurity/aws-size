@@ -1045,10 +1045,8 @@ elif limit == 'VPC Endpoint Policies':
               
                 if endpoint.get('PolicyDocument'):
                     policy_document = endpoint['PolicyDocument']
-
-                    str_policy = json.dumps(policy_document, indent=None, separators=(',', ':'))
-
-                    char_count = len(str_policy)
+               
+                    char_count = len(policy_document)
 
                     char_left = 20480 - char_count
                     usage = round(char_count / 20480, 4)

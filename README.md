@@ -8,7 +8,7 @@ Release Blog: [https://www.fogsecurity.io/blog/aws-size-release](https://www.fog
 
 AWS services and resources have limits that can impact development.  These limits (sometimes referred to as Service Quotas) can sometimes be adjustable (soft limits) or not (hard limits).  In some cases, these can make development difficult as running into a limit late can result in larger or risky architectural changes.  While AWS offers tooling to manage these and view visibility such as Service Quotas, Trusted Advisor, and more - these tools do not account for all limits and often refer to account or resource # limits, not necessarily limits within resources.  Even open source tooling we looked at focuses on similar limits and Trusted Advisor coverage.  aws-size addresses this gap in coverage and visibility.
 
-aws-size's current coverage: IAM, Organizations, EC2, S3, Systems Manager, Lambda, Secrets Manager
+aws-size's current coverage: IAM, Organizations, EC2, S3, Systems Manager, Lambda, Secrets Manager, VPC
 
 Note: aws-size does not currently cover any service limit supported by Trusted Advisor such as account limits (IAM roles per account).  If there's interest to have aws-size cover all service limits, please vote on the corresponding GitHub issue: [https://github.com/FogSecurity/aws-size/issues/59](https://github.com/FogSecurity/aws-size/issues/59).  
 
@@ -58,6 +58,7 @@ python3 aws-size.py --profile <your_profile_here> --region us-east-1
    SSM Parameter Store Parameters
    Lambda Environment Variables
    Secrets Manager Secrets
+   VPC Endpoint Policies
 ```
 
 Note: Region is only necessary if choosing resources that are regional such as EC2 instances and user data.  IAM is a global service.
@@ -146,6 +147,7 @@ Example of file structure is as follows:
 | Systems Manager | Parameter Store Advanced Parameter | Size | 8 KB | L-CECCEB04 | No | No | No | 
 | Lambda | Lambda Environment Variables | Combined Size | 4 KB | L-6581F036 | No | No | No |
 | Secrets Manager | Secret | Value Size | 65,536 bytes | L-2F24C883 | No | No | No |
+| VPC (EC2) | Interface VPC Endpoint Policy | Policy Size | 20,480 characters | L-3248932A | No | No | No |
 
 Note: Yes* for service quota visibility means we do see some visibility.  This seems limited to resources that have been recently updated.
 
@@ -252,3 +254,7 @@ Note: Decryption may be necessary to determine accurate size of environment vari
 
 Limit: 65,536 bytes
 Note: To accurately determine size of secrets, `secretsmanager:GetSecretValue` and `kms:Decrypt` may be needed.  Check IAM permissions for aws-size.
+
+### VPC Endpoint Policies (Region Specific)
+
+Limit: 20,480 characters (including white space)

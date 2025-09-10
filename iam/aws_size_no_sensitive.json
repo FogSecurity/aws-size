@@ -21,6 +21,7 @@
                 "iam:GetRolePolicy",
                 "ec2:DescribeInstances",
                 "ec2:DescribeInstanceAttribute",
+                "ec2:DescribeVpcEndpoints",
                 "s3:ListAllMyBuckets",
                 "s3:GetBucketPolicy",
                 "organizations:ListPolicies",

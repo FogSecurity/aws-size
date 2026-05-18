@@ -136,7 +136,7 @@ Example of file structure is as follows:
 | IAM | IAM Groups | Inline Policy Size | 5,120 characters | No | No | No | No |
 | EC2 | Instance | User Data Size | 16 KB | No | No | No | No |
 | S3 | Bucket | Bucket Policy Size | 20 KB | L-748707F3 | No | No | No | 
-| Organizations | SCPs | Document Size | 5,120 characters | L-C48BCE79 | No | No | No |
+| Organizations | SCPs | Document Size | 10,240 characters | L-C48BCE79 | No | No | No |
 | Organizations | RCPs | Document Size | 5,120 characters | No | No | No | No | 
 | Organizations | Declarative Policies | Document Size | 10,000 characters | No | No | No | No | 
 | Organizations | AI Services Opt-out Policies | Document Size | 2,500 characters | No | No | No | No | 
@@ -199,8 +199,8 @@ Note: AWS does some normalization on bucket policies.  aws-size will approximate
 
 ### AWS Organizations Service Control Policies (Global)
 
-Limit: 5,120 characters  
-Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.    
+Limit: 10,240 characters  
+Note: If policies are saved via CLI or SDK, white space is preserved.  This operation can be called from the management account or a member account if proper permissions are delegated.  This was updated from 5,120 characters in May 2026.  
 [Organizations Limits Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_reference_limits.html#min-max-values)
 
 ### AWS Organizations Resource Control Policies (Global)

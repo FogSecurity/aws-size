@@ -720,7 +720,7 @@ elif (limit == 'Organizations SCPs' or
 
     if limit == 'Organizations SCPs':
         selected_resource = "SCP"
-        size_limit = 5120
+        size_limit = 10240
     elif limit == 'Organizations RCPs':
         selected_resource = "RCP"
         size_limit = 5120

@@ -160,7 +160,7 @@ Note: white space doesn't count
 ### IAM Role Trust Policy (Global)
 
 Limit: 2,048 characters.
-Note: white space doesn't count.  This limit is adjustable up to 4,096.
+Note: white space doesn't count.  This limit is adjustable up to 8,192 (as of a May 2026 change).
 [AWS Documentation on IAM Limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html).
 
 ### IAM Managed Policies Per Role (Global)

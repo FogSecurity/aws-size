@@ -130,7 +130,7 @@ Example of file structure is as follows:
 | ------- | -------- | ----- | ---------- | ---------------------- | ------------------------ | -------------------------- | ---------- |
 | IAM | Managed Policies | Policy Length | 6,144 characters | L-ED111B8C | No | No | No |
 | IAM | IAM Roles | Role trust policy length | 2,048 characters | L-C07B4B0D | No | Yes* | Yes |
-| IAM | IAM Roles | Managed Policies Per Role | 10 | L-0DA4ABF3 | Yes | Yes | No |
+| IAM | IAM Roles | Managed Policies Per Role | 10 | L-0DA4ABF3 | Yes | Yes | Yes |
 | IAM | IAM Roles | Inline Policy Size | 10,240 characters | No | No | No | No |
 | IAM | IAM Users | Inline Policy Size | 2,048 characters |  No | No | No | No |
 | IAM | IAM Groups | Inline Policy Size | 5,120 characters | No | No | No | No |
@@ -165,7 +165,7 @@ Note: white space doesn't count.  This limit is adjustable up to 8,192 (as of a 
 
 ### IAM Managed Policies Per Role (Global)
 
-Limit: 10 Managed Policies Per Role.
+Limit: 10 Managed Policies Per Role.  This can be adjusted up to 25 (as of May 2026).
 Note: There is limited support in CloudWatch and Service Quotas.
 
 ### IAM Role Inline Policy Size (Global)
